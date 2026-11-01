@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+    <!-- Define the main shell for the application -->
+    <!-- The shell acts as a container for the application's pages and navigation -->
 <Shell
     x:Class="HomeMaintenanceMAUI.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"

@@ -1,69 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+    <!-- Main content page for the application -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HomeMaintenanceMAUI.MainPage">
-
-    <Grid ColumnDefinitions="*,*"
+    <!-- Grid is used to divide the page into sections -->
+    <!-- The 2* and 3* define the relative widths of the columns -->
+    <Grid ColumnDefinitions="2*,3*"
       ColumnSpacing="0">
-
         <!-- Left side: Illustration -->
         <Grid Grid.Column="0"
           BackgroundColor="{StaticResource WorkshopNavy}"
-          Padding="20">
-
+          Padding="10">
             <Image
             Source="workshop_illustration.png"
             Aspect="AspectFit"
             HorizontalOptions="Fill"
             VerticalOptions="Center" />
             <Label 
-                Text="Breachless Bungalow"
-                FontSize="28"
-                VerticalOptions="End"/>
-
+            Text="Breachless Bungalow"
+            FontSize="28"
+            VerticalOptions="End"/>
         </Grid>
-
         <!-- Right side: Login form -->
         <Grid Grid.Column="1"
           BackgroundColor="{StaticResource WorkshopBackground}"
           Padding="40">
-
             <VerticalStackLayout
             Spacing="20"
             VerticalOptions="Center">
-
                 <Label
                 Text="Let's Get It Done"
                 FontSize="28"
                 FontAttributes="Bold"
                 TextColor="{StaticResource WorkshopInk}" />
-
                 <Label
                 Text="A little upkeep, a lot of peace of mind."
                 TextColor="{StaticResource WorkshopInk}" />
-
                 <Entry
-                Placeholder="Username" />
-
+                x:Name="UsernameEntry"
+                Placeholder="Username"
+                TextColor="Black"/>
                 <Entry
+                x:Name="PasswordEntry"
                 Placeholder="Password"
-                IsPassword="True" />
-
+                IsPassword="True"
+                TextColor="Black" />
                 <Button
                 Text="Git-R-Done, yeehaw"
                 CornerRadius="15"
                 BackgroundColor="{StaticResource WorkshopGold}"
-                TextColor="{StaticResource WorkshopInk}" />
-
+                TextColor="{StaticResource WorkshopInk}" 
+                 Clicked="OnLoginClicked"/>
                 <Button
                 Text="Create an account"
-                BackgroundColor="Transparent"
-                TextColor="{StaticResource WorkshopNavy}" />
-
+                BackgroundColor="{StaticResource WorkshopSteel}"
+                TextColor="{StaticResource WorkshopNavy}" 
+                Clicked="OnCreateAccountClicked"/>
             </VerticalStackLayout>
-
         </Grid>
-
     </Grid>
-
 </ContentPage>

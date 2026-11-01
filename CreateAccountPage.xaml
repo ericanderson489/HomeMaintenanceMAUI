@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+    <!-- This is the Create Account page for the application -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HomeMaintenanceMAUI.CreateAccountPage"
+             Title="Create Account">
+    <Grid BackgroundColor="{StaticResource WorkshopBackground}"
+           Padding="40">
+          <!-- Padding means the space around the content, a lower value means less space -->
+        <ScrollView>
+            <!-- Vertical Stack Layout means the elements are stacked vertically...duh -->
+            <VerticalStackLayout
+                Spacing="20"
+                VerticalOptions="Center">
+                <!-- Title of page -->
+                <Label
+                    Text="Create Your Account"
+                    FontSize="28"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource WorkshopInk}" />
+                <Label
+                    Text="Let's get your home organized."
+                    TextColor="{StaticResource WorkshopInk}" />
+                <!-- User information fields -->
+                <!-- Notice x:Name attributes, this allows us to reference the entries elsewhere -->
+                <Entry
+                    x:Name="FirstNameEntry"
+                    Placeholder="First Name"
+                    TextColor="Black"/>
+                <Entry
+                    x:Name="LastNameEntry"
+                    Placeholder="Last Name"
+                    TextColor="Black"/>
+                <Entry
+                    x:Name="UsernameEntry"
+                    Placeholder="Username"
+                    TextColor="Black"/>
+                <Entry
+                    x:Name="PasswordEntry"
+                    Placeholder="Password"
+                    IsPassword="True"
+                    TextColor="Black" />
+                <Entry
+                    x:Name="ConfirmPasswordEntry"
+                    Placeholder="Confirm Password"
+                    IsPassword="True"
+                    TextColor="Black" />
+                <!-- Clicked is an event handler for button clicks...kinda self-explanatory -->
+                <!-- You can see where the logic for handling the button click is defined over in CreateAccountPage.xaml.cs -->
+                <Button
+                    Text="Create Account"
+                    CornerRadius="15"
+                    BackgroundColor="{StaticResource WorkshopGold}"
+                    TextColor="{StaticResource WorkshopInk}"
+                    Clicked="OnCreateAccountClicked"/>
+                <Button
+                    Text="Back to Login"
+                    CornerRadius="15"
+                    BackgroundColor="{StaticResource WorkshopSteel}"
+                    TextColor="{StaticResource WorkshopInk}" 
+                    Clicked="OnBackToLoginClicked"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
