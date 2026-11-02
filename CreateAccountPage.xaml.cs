@@ -47,6 +47,19 @@ public partial class CreateAccountPage : ContentPage
 
             return;
         }
+        // If usernames match, inform user account w/ username already exists
+        foreach (var account in accountStore.LoadAccounts())
+        {
+            if (account.GetAccountUserName() == username)
+            { // Iterates over each account in accountStore. If a match is found, inform user.
+                await DisplayAlert(
+                "Username Already in Use",
+                "Please create a new username.",
+                "OK");
+
+                return;
+            }
+        }
         // Log the validated username for debugging purposes.
         System.Diagnostics.Debug.WriteLine(
             $"Registration validated for username: {username}");
