@@ -86,7 +86,7 @@ public partial class CreateAccountPage : ContentPage
         }
         catch (ArgumentException ex)
         {
-            // Handles invalid account information or duplicate usernames.
+            // Handles invalid account information.
             await DisplayAlert("Registration Error", ex.Message, "OK");
         }
         catch (IOException)

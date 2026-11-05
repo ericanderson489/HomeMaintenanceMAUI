@@ -63,7 +63,9 @@ namespace HomeMaintenanceMAUI
                     $"Welcome back, {account.GetAccountFirstName()}!",
                     "OK");
 
-                // We'll navigate to the dashboard here next.
+                // Navigate to the dashboard on login.
+                await Shell.Current.GoToAsync(nameof(DashboardPage));
+
             }
             catch (InvalidDataException)
             {

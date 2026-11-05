@@ -10,5 +10,9 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(
             nameof(CreateAccountPage),
             typeof(CreateAccountPage));
+        // Register the route for the DashboardPage.
+        Routing.RegisterRoute(
+            nameof(DashboardPage),
+            typeof(DashboardPage));
     }
 }
