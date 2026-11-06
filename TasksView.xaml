@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:HomeMaintenanceMAUI"
+             x:Class="HomeMaintenanceMAUI.TasksView"
+             BackgroundColor="{StaticResource WorkshopBackground}">
+  <Grid Padding="20,16" RowDefinitions="Auto,Auto,*" RowSpacing="12">
+    <VerticalStackLayout Spacing="8" Margin="0,0,0,8">
+      <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
+        <Label Text="On the workbench" Style="{StaticResource WorkshopPageHeading}"
+               Margin="8,0,12,0" />
+        <Button Text="+ Add task" Style="{StaticResource WorkshopPrimaryButton}"
+                Clicked="OnAddTaskClicked" />
+      </FlexLayout>
+      <Label Text="Your next fix starts here." Style="{StaticResource WorkshopSubtitle}"
+             Margin="6,2,0,0" />
+      <local:WorkshopRuler />
+    </VerticalStackLayout>
+    <FlexLayout Grid.Row="1" Direction="Row" Wrap="Wrap" AlignItems="Center" Margin="4,0">
+      <Label Text="Show jobs" Style="{StaticResource WorkshopLabel}"
+             VerticalOptions="Center" Margin="0,0,16,0" />
+      <!-- The native picker has one external label and a visible, keyboard-accessible arrow. -->
+      <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+              StrokeShape="Rectangle" Padding="0"
+              BackgroundColor="{StaticResource WorkshopPaper}">
+        <local:WorkshopFilterPicker x:Name="JobFilterPicker" WidthRequest="200"
+                                    SemanticProperties.Description="Show jobs"
+                                    Style="{StaticResource WorkshopPicker}" FontSize="20"
+                                    MinimumHeightRequest="44">
+          <Picker.Items>
+            <x:String>All jobs</x:String>
+            <x:String>All active</x:String>
+            <x:String>Overdue</x:String>
+            <x:String>Due soon</x:String>
+            <x:String>Completed</x:String>
+            <x:String>Archived</x:String>
+          </Picker.Items>
+        </local:WorkshopFilterPicker>
+      </Border>
+    </FlexLayout>
+    <!-- The reference shows the full-width list until a job is selected. -->
+    <local:TaskListView Grid.Row="2" EmptyMessage="No jobs match this filter." />
+  </Grid>
+</ContentView>
