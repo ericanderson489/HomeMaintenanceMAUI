@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:HomeMaintenanceMAUI"
+             x:Class="HomeMaintenanceMAUI.TasksView"
+             BackgroundColor="{StaticResource WorkshopBackground}"
+             SizeChanged="OnSizeChanged">
+  <ScrollView>
+    <VerticalStackLayout Padding="24" Spacing="18">
+      <FlexLayout Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
+        <VerticalStackLayout Spacing="6" Margin="0,0,16,10">
+          <Label Text="On the workbench" Style="{StaticResource WorkshopPageHeading}" />
+          <Label Text="Your next fix starts here." Style="{StaticResource WorkshopSubtitle}" />
+        </VerticalStackLayout>
+        <Button Text="+ Add task" Style="{StaticResource WorkshopPrimaryButton}"
+                Clicked="OnAddTaskClicked" Margin="0,0,0,10" />
+      </FlexLayout>
+      <local:WorkshopRuler />
+      <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14" MaximumWidthRequest="340"
+            HorizontalOptions="Start">
+        <Label Text="Show jobs" Style="{StaticResource WorkshopLabel}"
+               VerticalOptions="Center" />
+        <!-- Selection changes only the native input; no filtering or account access is added. -->
+        <Picker Grid.Column="1" Title="Show jobs" SelectedIndex="0"
+                Style="{StaticResource WorkshopPicker}" MinimumWidthRequest="180">
+          <Picker.Items>
+            <x:String>All jobs</x:String>
+            <x:String>All active</x:String>
+            <x:String>Overdue</x:String>
+            <x:String>Due soon</x:String>
+            <x:String>Completed</x:String>
+            <x:String>Archived</x:String>
+          </Picker.Items>
+        </Picker>
+      </Grid>
+      <Grid x:Name="WorkspaceGrid" RowDefinitions="Auto,Auto" ColumnDefinitions="*"
+            RowSpacing="16" ColumnSpacing="16">
+        <local:TaskListView x:Name="TaskList" />
+        <local:JobSheetView x:Name="JobSheet" Grid.Row="1" />
+      </Grid>
+    </VerticalStackLayout>
+  </ScrollView>
+</ContentView>

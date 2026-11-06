@@ -1,62 +1,119 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-    <!-- Main content page for the application -->
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="HomeMaintenanceMAUI.MainPage">
-    <!-- Grid is used to divide the page into sections -->
-    <!-- The 2* and 3* define the relative widths of the columns -->
-    <Grid ColumnDefinitions="2*,3*"
-      ColumnSpacing="0">
-        <!-- Left side: Illustration -->
-        <Grid Grid.Column="0"
-          BackgroundColor="{StaticResource WorkshopNavy}"
-          Padding="10">
-            <Image
-            Source="workshop_illustration.png"
-            Aspect="AspectFit"
-            HorizontalOptions="Fill"
-            VerticalOptions="Center" />
-            <Label 
-            Text="Breachless Bungalow"
-            FontSize="28"
-            VerticalOptions="End"/>
-        </Grid>
-        <!-- Right side: Login form -->
-        <Grid Grid.Column="1"
-          BackgroundColor="{StaticResource WorkshopBackground}"
-          Padding="40">
-            <VerticalStackLayout
-            Spacing="20"
-            VerticalOptions="Center">
-                <Label
-                Text="Let's Get It Done"
-                FontSize="28"
-                FontAttributes="Bold"
-                TextColor="{StaticResource WorkshopInk}" />
-                <Label
-                Text="A little upkeep, a lot of peace of mind."
-                TextColor="{StaticResource WorkshopInk}" />
-                <Entry
-                x:Name="UsernameEntry"
-                Placeholder="Username"
-                TextColor="Black"/>
-                <Entry
-                x:Name="PasswordEntry"
-                Placeholder="Password"
-                IsPassword="True"
-                TextColor="Black" />
-                <Button
-                Text="Git-R-Done, yeehaw"
-                CornerRadius="15"
-                BackgroundColor="{StaticResource WorkshopGold}"
-                TextColor="{StaticResource WorkshopInk}" 
-                 Clicked="OnLoginClicked"/>
-                <Button
-                Text="Create an account"
-                BackgroundColor="{StaticResource WorkshopSteel}"
-                TextColor="{StaticResource WorkshopNavy}" 
-                Clicked="OnCreateAccountClicked"/>
-            </VerticalStackLayout>
-        </Grid>
+             xmlns:local="clr-namespace:HomeMaintenanceMAUI"
+             x:Class="HomeMaintenanceMAUI.MainPage"
+             Title="Sign in"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource WorkshopBackground}">
+  <!-- Only presentation changes here; both buttons retain the existing account handlers. -->
+  <Grid ColumnDefinitions="46*,54*" RowDefinitions="Auto,*">
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="AccountLayoutStates">
+        <VisualState x:Name="Wide">
+          <VisualState.StateTriggers>
+            <AdaptiveTrigger MinWindowWidth="720" />
+          </VisualState.StateTriggers>
+          <VisualState.Setters>
+            <Setter TargetName="BrandPanel" Property="Grid.RowSpan" Value="2" />
+            <Setter TargetName="BrandPanel" Property="Grid.ColumnSpan" Value="1" />
+            <Setter TargetName="BrandPanel" Property="HeightRequest" Value="-1" />
+            <Setter TargetName="BrandPanel" Property="RowSpacing" Value="18" />
+            <Setter TargetName="BrandSign" Property="HeightRequest" Value="160" />
+            <Setter TargetName="WorkshopImage" Property="IsVisible" Value="True" />
+            <Setter TargetName="Slogan" Property="IsVisible" Value="True" />
+            <Setter TargetName="FormScroll" Property="Grid.Column" Value="1" />
+            <Setter TargetName="FormScroll" Property="Grid.ColumnSpan" Value="1" />
+            <Setter TargetName="FormScroll" Property="Grid.Row" Value="0" />
+            <Setter TargetName="FormScroll" Property="Grid.RowSpan" Value="2" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="Narrow">
+          <VisualState.StateTriggers>
+            <AdaptiveTrigger MinWindowWidth="0" />
+          </VisualState.StateTriggers>
+          <VisualState.Setters>
+            <Setter TargetName="BrandPanel" Property="Grid.RowSpan" Value="1" />
+            <Setter TargetName="BrandPanel" Property="Grid.ColumnSpan" Value="2" />
+            <Setter TargetName="BrandPanel" Property="HeightRequest" Value="196" />
+            <Setter TargetName="BrandPanel" Property="RowSpacing" Value="0" />
+            <Setter TargetName="BrandSign" Property="HeightRequest" Value="160" />
+            <Setter TargetName="WorkshopImage" Property="IsVisible" Value="False" />
+            <Setter TargetName="Slogan" Property="IsVisible" Value="False" />
+            <Setter TargetName="FormScroll" Property="Grid.Column" Value="0" />
+            <Setter TargetName="FormScroll" Property="Grid.ColumnSpan" Value="2" />
+            <Setter TargetName="FormScroll" Property="Grid.Row" Value="1" />
+            <Setter TargetName="FormScroll" Property="Grid.RowSpan" Value="1" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <!-- The original Workshop sign and illustration become a compact banner on small screens. -->
+    <Grid x:Name="BrandPanel"
+          Grid.RowSpan="2"
+          RowDefinitions="Auto,*,Auto"
+          Padding="18"
+          RowSpacing="18"
+          BackgroundColor="{StaticResource WorkshopNavy}">
+      <local:WorkshopSign x:Name="BrandSign"
+                          HeightRequest="160"
+                          MaximumWidthRequest="340"
+                          HorizontalOptions="Fill" />
+      <Image x:Name="WorkshopImage"
+             Grid.Row="1"
+             Source="workshop_illustration.png"
+             Aspect="AspectFit"
+             MaximumHeightRequest="300"
+             SemanticProperties.Description="Workbench, pegboard tools, and navy tool cabinet" />
+      <Label x:Name="Slogan"
+             Grid.Row="2"
+             Text="A little upkeep.&#10;A lot of peace of mind."
+             Style="{StaticResource WorkshopPageHeading}"
+             FontSize="24"
+             TextColor="{StaticResource WorkshopPaper}"
+             HorizontalTextAlignment="Center"
+             Margin="0,0,0,18" />
     </Grid>
+
+    <!-- Scrolling keeps every account field and action reachable when the keyboard opens. -->
+    <ScrollView x:Name="FormScroll" Grid.Column="1" Grid.RowSpan="2">
+      <Border Margin="18"
+              Padding="24"
+              MaximumWidthRequest="540"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource WorkshopPaper}"
+              Stroke="{StaticResource WorkshopSteel}"
+              StrokeThickness="1">
+        <VerticalStackLayout Spacing="12">
+          <Label Text="Welcome back." Style="{StaticResource WorkshopPageHeading}" />
+          <local:WorkshopRuler WidthRequest="140"
+                               HeightRequest="12"
+                               HorizontalOptions="Start"
+                               Margin="0,0,0,14" />
+          <Label Text="Username" Style="{StaticResource WorkshopLabel}" />
+          <Entry x:Name="UsernameEntry"
+                 Placeholder="Username"
+                 Style="{StaticResource WorkshopEntry}"
+                 SemanticProperties.Description="Username" />
+          <Label Text="Password" Style="{StaticResource WorkshopLabel}" />
+          <Entry x:Name="PasswordEntry"
+                 Placeholder="Password"
+                 IsPassword="True"
+                 Style="{StaticResource WorkshopEntry}"
+                 SemanticProperties.Description="Password" />
+          <FlexLayout Direction="Row" Wrap="Wrap" Margin="0,12,0,0">
+            <Button Text="Sign in"
+                    Style="{StaticResource WorkshopPrimaryButton}"
+                    Margin="0,0,10,10"
+                    Clicked="OnLoginClicked" />
+            <Button Text="Create account"
+                    Style="{StaticResource WorkshopButton}"
+                    Margin="0,0,0,10"
+                    Clicked="OnCreateAccountClicked" />
+          </FlexLayout>
+        </VerticalStackLayout>
+      </Border>
+    </ScrollView>
+  </Grid>
 </ContentPage>

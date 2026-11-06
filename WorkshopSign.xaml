@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HomeMaintenanceMAUI.WorkshopSign"
+             SemanticProperties.Description="Breachless Bungalow, Home Maintenance Workshop">
+  <!-- Native text keeps the original framed sign readable at different screen densities. -->
+  <Border Margin="6" Padding="8,14" Rotation="-2"
+          BackgroundColor="{StaticResource WorkshopInk}"
+          Stroke="{StaticResource WorkshopSteel}" StrokeThickness="2">
+    <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+      <Label Text="BREACHLESS" FontSize="19" FontAttributes="Bold"
+             FontFamily="{StaticResource WorkshopHeadingFont}"
+             TextColor="{StaticResource WorkshopPaper}" HorizontalTextAlignment="Center" />
+      <Label Text="BUNGALOW" FontSize="27" FontAttributes="Bold,Italic"
+             FontFamily="{StaticResource WorkshopHeadingFont}"
+             TextColor="{StaticResource WorkshopGold}" HorizontalTextAlignment="Center" />
+      <Grid Margin="6,8" ColumnDefinitions="*,22" HeightRequest="3">
+        <BoxView Color="{StaticResource WorkshopSteel}" />
+        <BoxView Grid.Column="1" Color="{StaticResource WorkshopRed}" />
+      </Grid>
+      <Label Text="HOME MAINTENANCE&#10;WORKSHOP" FontSize="10" FontAttributes="Bold"
+             FontFamily="{StaticResource WorkshopHeadingFont}"
+             TextColor="{StaticResource WorkshopPaper}" HorizontalTextAlignment="Center" />
+    </VerticalStackLayout>
+  </Border>
+</ContentView>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HomeMaintenanceMAUI.TaskEditorPage"
+             Title="Add task" NavigationPage.HasNavigationBar="False"
+             BackgroundColor="{StaticResource WorkshopBackground}">
+  <ScrollView>
+    <Border Style="{StaticResource WorkshopCard}" Margin="20" Padding="24"
+            MaximumWidthRequest="620" HorizontalOptions="Fill">
+      <VerticalStackLayout Spacing="14">
+        <Label x:Name="EditorHeading" Text="ADD TASK"
+               Style="{StaticResource WorkshopPageHeading}" />
+        <BoxView Color="{StaticResource WorkshopMuted}" HeightRequest="1"
+                 WidthRequest="140" HorizontalOptions="Start" Margin="0,0,0,8" />
+        <Label Text="Task title" Style="{StaticResource WorkshopLabel}" />
+        <Entry x:Name="TaskTitleEntry" Placeholder="Task title"
+               Style="{StaticResource WorkshopEntry}" SemanticProperties.Description="Task title" />
+        <Label Text="Description / notes (required)" Style="{StaticResource WorkshopLabel}" />
+        <Editor x:Name="TaskNotesEditor" Placeholder="Description / notes"
+                Style="{StaticResource WorkshopEditor}" HeightRequest="120"
+                SemanticProperties.Description="Description or notes, required" />
+        <Label Text="Due date" Style="{StaticResource WorkshopLabel}" />
+        <DatePicker x:Name="DueDatePicker" Format="MMM d, yyyy"
+                    TextColor="{StaticResource WorkshopInk}"
+                    BackgroundColor="{StaticResource WorkshopBackground}"
+                    SemanticProperties.Description="Due date" />
+        <Label Text="Task type" Style="{StaticResource WorkshopLabel}" />
+        <Picker x:Name="TaskTypePicker" Title="Choose a task type"
+                Style="{StaticResource WorkshopPicker}">
+          <Picker.Items>
+            <x:String>Priority</x:String>
+            <x:String>Recurring</x:String>
+          </Picker.Items>
+        </Picker>
+        <Label Text="Repeat" Style="{StaticResource WorkshopLabel}" />
+        <Picker x:Name="RepeatPicker" Title="Repeat schedule" SelectedIndex="0"
+                Style="{StaticResource WorkshopPicker}">
+          <Picker.Items>
+            <x:String>Does not repeat</x:String>
+            <x:String>Weekly</x:String>
+            <x:String>Monthly</x:String>
+            <x:String>Every 3 months</x:String>
+            <x:String>Yearly</x:String>
+          </Picker.Items>
+        </Picker>
+        <FlexLayout Wrap="Wrap" Margin="0,12,0,0">
+          <!-- Save intentionally has no event or command; input is never persisted by this UI. -->
+          <Button Text="Save" Style="{StaticResource WorkshopPrimaryButton}"
+                  IsEnabled="False" Margin="0,0,10,8" />
+          <Button Text="Cancel" Style="{StaticResource WorkshopButton}"
+                  Clicked="OnCancelClicked" Margin="0,0,0,8" />
+        </FlexLayout>
+      </VerticalStackLayout>
+    </Border>
+  </ScrollView>
+</ContentPage>

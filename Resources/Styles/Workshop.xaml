@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+  <!-- Named styles leave existing team styles and application behavior intact. -->
+  <Color x:Key="WorkshopMuted">#526771</Color>
+  <OnPlatform x:Key="WorkshopBodyFont" x:TypeArguments="x:String" Default="OpenSansRegular">
+    <On Platform="WinUI" Value="Segoe UI" />
+  </OnPlatform>
+  <OnPlatform x:Key="WorkshopHeadingFont" x:TypeArguments="x:String" Default="OpenSansSemibold">
+    <On Platform="WinUI" Value="Bahnschrift SemiCondensed" />
+  </OnPlatform>
+  <Style x:Key="WorkshopLabel" TargetType="Label">
+    <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
+  </Style>
+  <Style x:Key="WorkshopSubtitle" TargetType="Label" BasedOn="{StaticResource WorkshopLabel}">
+    <Setter Property="TextColor" Value="{StaticResource WorkshopMuted}" />
+  </Style>
+  <Style x:Key="WorkshopPageHeading" TargetType="Label"
+         BasedOn="{StaticResource WorkshopLabel}">
+    <Setter Property="FontFamily" Value="{StaticResource WorkshopHeadingFont}" />
+    <Setter Property="FontSize" Value="30" />
+    <Setter Property="FontAttributes" Value="Bold" />
+    <Setter Property="SemanticProperties.HeadingLevel" Value="Level1" />
+  </Style>
+  <Style x:Key="WorkshopButton" TargetType="Button">
+    <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
+    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="BorderColor" Value="{StaticResource WorkshopSteel}" />
+    <Setter Property="BorderWidth" Value="1" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="MinimumHeightRequest" Value="44" />
+    <Setter Property="Padding" Value="16,10" />
+    <Setter Property="VisualStateManager.VisualStateGroups">
+      <VisualStateGroupList>
+        <VisualStateGroup x:Name="CommonStates">
+          <VisualState x:Name="Normal" />
+          <VisualState x:Name="Disabled">
+            <VisualState.Setters>
+              <Setter Property="Opacity" Value="0.55" />
+            </VisualState.Setters>
+          </VisualState>
+          <VisualState x:Name="PointerOver">
+            <VisualState.Setters>
+              <Setter Property="BorderColor" Value="{StaticResource WorkshopMuted}" />
+            </VisualState.Setters>
+          </VisualState>
+        </VisualStateGroup>
+      </VisualStateGroupList>
+    </Setter>
+  </Style>
+  <Style x:Key="WorkshopPrimaryButton" TargetType="Button"
+         BasedOn="{StaticResource WorkshopButton}">
+    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopGold}" />
+    <Setter Property="BorderColor" Value="#B88B2B" />
+  </Style>
+  <Style x:Key="WorkshopNavigationButton" TargetType="Button"
+         BasedOn="{StaticResource WorkshopButton}">
+    <Setter Property="TextColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopNavy}" />
+    <Setter Property="BorderColor" Value="{StaticResource WorkshopMuted}" />
+  </Style>
+  <Style x:Key="WorkshopCard" TargetType="Border">
+    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="Stroke" Value="{StaticResource WorkshopSteel}" />
+    <Setter Property="StrokeThickness" Value="1" />
+    <Setter Property="StrokeShape" Value="Rectangle" />
+    <Setter Property="Padding" Value="16" />
+  </Style>
+  <Style x:Key="WorkshopEntry" TargetType="Entry">
+    <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
+    <Setter Property="PlaceholderColor" Value="{StaticResource WorkshopMuted}" />
+    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="MinimumHeightRequest" Value="44" />
+  </Style>
+  <Style x:Key="WorkshopEditor" TargetType="Editor">
+    <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
+    <Setter Property="PlaceholderColor" Value="{StaticResource WorkshopMuted}" />
+    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="MinimumHeightRequest" Value="120" />
+  </Style>
+  <Style x:Key="WorkshopPicker" TargetType="Picker">
+    <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
+    <Setter Property="TitleColor" Value="{StaticResource WorkshopMuted}" />
+    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="MinimumHeightRequest" Value="44" />
+  </Style>
+</ResourceDictionary>

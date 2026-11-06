@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HomeMaintenanceMAUI.JobSheetView">
+  <Border Style="{StaticResource WorkshopCard}" Padding="12">
+    <VerticalStackLayout Spacing="16">
+      <Grid ColumnDefinitions="*,Auto" Padding="10,8" ColumnSpacing="8"
+            BackgroundColor="{StaticResource WorkshopNavy}">
+        <Label Text="JOB SHEET" Style="{StaticResource WorkshopLabel}"
+               FontAttributes="Bold" TextColor="{StaticResource WorkshopPaper}"
+               VerticalOptions="Center" />
+        <Button Grid.Column="1" Text="Close" Style="{StaticResource WorkshopButton}"
+                IsEnabled="False" MinimumWidthRequest="60" />
+      </Grid>
+      <Label Text="Select a job to view details."
+             Style="{StaticResource WorkshopPageHeading}" FontSize="22" />
+      <!-- Values stay unbound until the existing project supplies a task presentation source. -->
+      <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
+            RowSpacing="12" ColumnSpacing="20">
+        <Label Text="Due date" Style="{StaticResource WorkshopSubtitle}" />
+        <Label Grid.Column="1" Text="—" Style="{StaticResource WorkshopLabel}" />
+        <Label Grid.Row="1" Text="Status" Style="{StaticResource WorkshopSubtitle}" />
+        <Label Grid.Row="1" Grid.Column="1" Text="—"
+               Style="{StaticResource WorkshopLabel}" />
+        <Label Grid.Row="2" Text="Task type" Style="{StaticResource WorkshopSubtitle}" />
+        <Label Grid.Row="2" Grid.Column="1" Text="—"
+               Style="{StaticResource WorkshopLabel}" />
+        <Label Grid.Row="3" Text="Repeat" Style="{StaticResource WorkshopSubtitle}" />
+        <Label Grid.Row="3" Grid.Column="1" Text="—"
+               Style="{StaticResource WorkshopLabel}" />
+      </Grid>
+      <BoxView Color="{StaticResource WorkshopSteel}" HeightRequest="1" />
+      <Label Text="Description / notes" Style="{StaticResource WorkshopLabel}"
+             FontAttributes="Bold" />
+      <Label Text="—" Style="{StaticResource WorkshopSubtitle}" MinimumHeightRequest="70" />
+      <!-- Intentionally no Clicked handlers, commands, or task mutations on these actions. -->
+      <FlexLayout Wrap="Wrap" AlignItems="Start">
+        <Button Text="Mark complete" Style="{StaticResource WorkshopPrimaryButton}"
+                IsEnabled="False" Margin="0,0,8,8" />
+        <Button Text="Edit task" Style="{StaticResource WorkshopButton}"
+                IsEnabled="False" Margin="0,0,8,8" />
+        <Button Text="Archive" Style="{StaticResource WorkshopButton}"
+                IsEnabled="False" Margin="0,0,8,0" />
+      </FlexLayout>
+    </VerticalStackLayout>
+  </Border>
+</ContentView>
