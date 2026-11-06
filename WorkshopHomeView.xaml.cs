@@ -9,12 +9,14 @@ namespace HomeMaintenanceMAUI {
       InitializeComponent();
     }
 
-    /// <summary>Opens the task form for layout review; the form has no save action.</summary>
+    /// <summary>
+    /// Shows the requested handoff message without opening a form or changing tasks.
+    /// </summary>
     private async void OnAddTaskClicked(object sender, EventArgs e) {
       var button = (Button)sender;
       button.IsEnabled = false;
       try {
-        await Navigation.PushModalAsync(new NavigationPage(new TaskEditorPage()));
+        await Shell.Current.DisplayAlert("Add task", "keifer work here.", "OK");
       } finally {
         button.IsEnabled = true;
       }

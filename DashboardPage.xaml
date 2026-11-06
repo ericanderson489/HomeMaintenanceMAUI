@@ -26,15 +26,18 @@
       </VisualStateGroup>
     </VisualStateManager.VisualStateGroups>
     <!-- Both navigation layouts use the same presentation-only event handlers. -->
-    <Grid x:Name="Sidebar" Grid.RowSpan="2" Padding="12,20,12,16"
-          RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="12"
+    <Grid x:Name="Sidebar" Grid.RowSpan="2" Padding="12,12,20,16"
+          RowDefinitions="155,50,50,*,50" RowSpacing="6"
           BackgroundColor="{StaticResource WorkshopNavy}">
       <local:WorkshopSign Margin="0,0,0,20" />
-      <Button x:Name="HomeButton" Grid.Row="1" Text="Home" Clicked="OnHomeClicked"
+      <local:WorkshopNavigationButton x:Name="HomeButton" Grid.Row="1" Text="Home"
+              Clicked="OnHomeClicked"
               Style="{StaticResource WorkshopNavigationButton}" />
-      <Button x:Name="TasksButton" Grid.Row="2" Text="Tasks" Clicked="OnTasksClicked"
+      <local:WorkshopNavigationButton x:Name="TasksButton" Grid.Row="2" Text="Tasks"
+              Clicked="OnTasksClicked"
               Style="{StaticResource WorkshopNavigationButton}" />
       <Button Grid.Row="4" Text="Sign out" Clicked="OnSignOutClicked"
+              HorizontalOptions="Start"
               Style="{StaticResource WorkshopNavigationButton}" />
     </Grid>
     <Grid x:Name="CompactNavigation" Grid.Column="1" IsVisible="False"

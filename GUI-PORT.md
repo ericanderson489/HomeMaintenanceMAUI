@@ -13,27 +13,35 @@ The visual reference is `HomeMaintenanceApp` branch `ui/workshop-theme`, commit
 - `DashboardPage`: a `ContentPage` for the existing Shell login destination,
   with Home, Tasks, and Sign out navigation. The previous placeholder was a
   `ContentView`, which is not a Shell navigation page.
-- `WorkshopHomeView`: overview headings, unbound summary cards, and upcoming jobs.
-- `TasksView`, `TaskListView`, and `JobSheetView`: filter controls, empty task table,
-  job-sheet fields, and responsive side-by-side/stacked layouts.
+- `WorkshopHomeView`: overview headings, one horizontal summary strip, and a
+  filling upcoming-jobs table matching the reference screenshot.
+- `TasksView` and `TaskListView`: filter controls and a full-width task table with
+  the empty-state message in its footer, matching the supplied screenshots.
+  `JobSheetView` remains available for future wiring but is not displayed.
 - `TaskEditorPage`: title, required-notes label, due date, task type, and repeat
   inputs. `new TaskEditorPage()` displays Add; `new TaskEditorPage(true)` displays
   Edit. Neither constructor accepts or alters a task record.
 - `WorkshopSign`, `WorkshopRuler`, and `Resources/Styles/Workshop.xaml`: shared
   branding, typography, and explicit styles using the existing palette.
+  `Resources/Images/workshop_sign.png` is a transparent, high-resolution export
+  of the original WinForms sign, preserving its condensed lettering.
 
 ## Behavior boundary
 
-New handlers only switch screens, open/cancel the task form, and adjust layout.
+Both Add task buttons display only the message `keifer work here.` with an OK
+button. They do not navigate to the task editor, create tasks, or save anything.
+Other new handlers switch screens or close the application from login Cancel.
 Save, Mark complete, Edit task, Archive, Close job sheet, and View details are
 disabled and have no task handlers or commands. The filter only changes the
 picker's displayed choice. Task fields have no validation or persistence.
-Counts use dashes and the list is empty; no sample tasks or calculated state are
-introduced. The edit-form layout is ready for future selection wiring.
+Counts are static zeroes matching the reference screenshots and the list is
+empty; no sample tasks or calculated state are introduced. The disconnected
+task-editor layout remains available for future work but Add task cannot open it.
 
 The existing `Models/`, `Services/`, `MainPage.xaml.cs`,
 `CreateAccountPage.xaml.cs`, `AppShell.xaml.cs`, application startup, and project
-targets/packages are unchanged. The existing account logic remains connected to
+targets/packages are unchanged. Only the Shell's displayed window title changes.
+The existing account logic remains connected to
 its original controls. No legacy WinForms models, account storage, task adapters,
 recurrence calculations, or task mutations are copied.
 
@@ -59,10 +67,12 @@ dotnet build HomeMaintenanceMAUI.csproj `
 Diff checks confirm that the existing model, service, authentication, startup,
 and routing code is unchanged. XAML event names remain matched to the original
 authentication handlers. Android/iOS/MacCatalyst builds have not been run.
-Native preview accessibility was inspected, but full visual and navigation QA
-remains to be completed on the team's target devices.
+An isolated Windows preview successfully loads the workspace and its Home
+accessibility tree. Account layout was also visually compared with the reference.
+Full interactive and mobile QA remains to be completed on the team's target devices.
 
 For manual review: sign in with an existing development account, switch Home /
-Tasks, open Add task and Cancel, resize to a narrow window, and verify disabled
+Tasks, click Add task on each screen and verify `keifer work here.`, dismiss each
+popup with OK, resize to a narrow window, and verify disabled
 task actions remain inert. Confirm registration still includes password
 confirmation and returns to the existing sign-in screen.

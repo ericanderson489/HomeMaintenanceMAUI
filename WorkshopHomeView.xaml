@@ -3,61 +3,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              x:Class="HomeMaintenanceMAUI.WorkshopHomeView">
-  <ScrollView>
-    <VerticalStackLayout Padding="24" Spacing="16">
+  <!-- A filling grid keeps the list and its footer aligned with the original desktop layout. -->
+  <Grid Padding="20,16" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
+    <VerticalStackLayout Spacing="8" Margin="0,0,0,10">
       <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
         <Label Text="Back in the workshop." Style="{StaticResource WorkshopPageHeading}"
-               Margin="0,0,12,8" />
+               Margin="8,0,12,0" />
         <Button Text="+ Add task" Style="{StaticResource WorkshopPrimaryButton}"
-                Clicked="OnAddTaskClicked" Margin="0,0,0,8" />
+                Clicked="OnAddTaskClicked" />
       </FlexLayout>
-      <Label Text="Here’s what needs your attention." Style="{StaticResource WorkshopSubtitle}" />
+      <Label Text="Here’s what needs your attention." Style="{StaticResource WorkshopSubtitle}"
+             Margin="6,2,0,0" />
       <local:WorkshopRuler />
-      <!-- Counts remain unbound until the team's task source is connected. -->
-      <FlexLayout Direction="Row" Wrap="Wrap">
-        <Border Style="{StaticResource WorkshopCard}" FlexLayout.Grow="1"
-                FlexLayout.Basis="145" Margin="0,0,8,8">
-          <VerticalStackLayout Spacing="5">
-            <Label Text="—" Style="{StaticResource WorkshopPageHeading}" />
-            <Label Text="On the bench" Style="{StaticResource WorkshopLabel}" />
-          </VerticalStackLayout>
-        </Border>
-        <Border Style="{StaticResource WorkshopCard}" FlexLayout.Grow="1"
-                FlexLayout.Basis="145" Margin="0,0,8,8">
-          <VerticalStackLayout Spacing="5">
-            <Label Text="—" Style="{StaticResource WorkshopPageHeading}" />
-            <Label Text="Due soon" Style="{StaticResource WorkshopLabel}" />
-          </VerticalStackLayout>
-        </Border>
-        <Border Style="{StaticResource WorkshopCard}" FlexLayout.Grow="1"
-                FlexLayout.Basis="145" Margin="0,0,8,8">
-          <VerticalStackLayout Spacing="5">
-            <Label Text="—" Style="{StaticResource WorkshopPageHeading}"
-                   TextColor="{StaticResource WorkshopRed}" />
-            <Label Text="Overdue" Style="{StaticResource WorkshopLabel}"
-                   TextColor="{StaticResource WorkshopRed}" />
-          </VerticalStackLayout>
-        </Border>
-        <Border Style="{StaticResource WorkshopCard}" FlexLayout.Grow="1"
-                FlexLayout.Basis="145" Margin="0,0,0,8">
-          <VerticalStackLayout Spacing="5">
-            <Label Text="—" Style="{StaticResource WorkshopPageHeading}" />
-            <Label Text="Finished" Style="{StaticResource WorkshopLabel}" />
-          </VerticalStackLayout>
-        </Border>
-      </FlexLayout>
-      <VerticalStackLayout Spacing="0">
-        <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween"
-                    AlignItems="Center" Padding="16,10"
-                    BackgroundColor="{StaticResource WorkshopNavy}">
-          <Label Text="UPCOMING JOBS" Style="{StaticResource WorkshopLabel}"
-                 TextColor="{StaticResource WorkshopPaper}" FontSize="19" FontAttributes="Bold"
-                 FontFamily="{StaticResource WorkshopHeadingFont}" Margin="0,8,12,8" />
-          <Button Text="View all tasks" Style="{StaticResource WorkshopButton}"
-                  Clicked="OnViewTasksClicked" />
-        </FlexLayout>
-        <local:TaskListView />
-      </VerticalStackLayout>
     </VerticalStackLayout>
-  </ScrollView>
+
+    <!-- Zeroes reproduce the reference's empty visual state; no task totals are calculated. -->
+    <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{StaticResource WorkshopPaper}">
+      <Border Style="{StaticResource WorkshopCard}" Padding="14,16">
+        <Label Text="0  On the bench" Style="{StaticResource WorkshopLabel}" FontSize="23"
+               FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
+      </Border>
+      <Border Grid.Column="1" Style="{StaticResource WorkshopCard}" Padding="14,16">
+        <Label Text="0  Due soon" Style="{StaticResource WorkshopLabel}" FontSize="23"
+               FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
+      </Border>
+      <Border Grid.Column="2" Style="{StaticResource WorkshopCard}" Padding="14,16">
+        <Label Text="0  Overdue" Style="{StaticResource WorkshopLabel}" FontSize="23"
+               FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
+               TextColor="{StaticResource WorkshopRed}" />
+      </Border>
+      <Border Grid.Column="3" Style="{StaticResource WorkshopCard}" Padding="14,16">
+        <Label Text="0  Finished" Style="{StaticResource WorkshopLabel}" FontSize="23"
+               FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
+      </Border>
+    </Grid>
+
+    <FlexLayout Grid.Row="2" Direction="Row" Wrap="Wrap" AlignItems="Center"
+                Padding="16,7" BackgroundColor="{StaticResource WorkshopNavy}">
+      <Label Text="UPCOMING JOBS" Style="{StaticResource WorkshopLabel}"
+             TextColor="{StaticResource WorkshopPaper}" FontSize="27" FontAttributes="Bold"
+             FontFamily="{StaticResource WorkshopHeadingFont}" Margin="0,0,28,0" />
+      <Button Text="View all tasks" Style="{StaticResource WorkshopButton}"
+              Clicked="OnViewTasksClicked" />
+    </FlexLayout>
+    <local:TaskListView Grid.Row="3" EmptyMessage="No tasks yet. Add your first job." />
+  </Grid>
 </ContentView>

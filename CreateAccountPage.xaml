@@ -15,11 +15,13 @@
             <AdaptiveTrigger MinWindowWidth="720" />
           </VisualState.StateTriggers>
           <VisualState.Setters>
-            <Setter TargetName="BrandPanel" Property="Grid.RowSpan" Value="2" />
-            <Setter TargetName="BrandPanel" Property="Grid.ColumnSpan" Value="1" />
-            <Setter TargetName="BrandPanel" Property="HeightRequest" Value="-1" />
-            <Setter TargetName="BrandPanel" Property="RowSpacing" Value="18" />
-            <Setter TargetName="BrandSign" Property="HeightRequest" Value="160" />
+            <Setter TargetName="BrandScroll" Property="Grid.RowSpan" Value="2" />
+            <Setter TargetName="BrandScroll" Property="Grid.ColumnSpan" Value="1" />
+            <Setter TargetName="BrandPanel" Property="HeightRequest" Value="720" />
+            <Setter TargetName="BrandScroll" Property="HeightRequest" Value="-1" />
+            <Setter TargetName="BrandPanel" Property="RowDefinitions" Value="245,341,96" />
+            <Setter TargetName="BrandPanel" Property="RowSpacing" Value="0" />
+            <Setter TargetName="BrandSign" Property="HeightRequest" Value="205" />
             <Setter TargetName="WorkshopImage" Property="IsVisible" Value="True" />
             <Setter TargetName="Slogan" Property="IsVisible" Value="True" />
             <Setter TargetName="FormScroll" Property="Grid.Column" Value="1" />
@@ -33,11 +35,13 @@
             <AdaptiveTrigger MinWindowWidth="0" />
           </VisualState.StateTriggers>
           <VisualState.Setters>
-            <Setter TargetName="BrandPanel" Property="Grid.RowSpan" Value="1" />
-            <Setter TargetName="BrandPanel" Property="Grid.ColumnSpan" Value="2" />
-            <Setter TargetName="BrandPanel" Property="HeightRequest" Value="196" />
+            <Setter TargetName="BrandScroll" Property="Grid.RowSpan" Value="1" />
+            <Setter TargetName="BrandScroll" Property="Grid.ColumnSpan" Value="2" />
+            <Setter TargetName="BrandPanel" Property="HeightRequest" Value="180" />
+            <Setter TargetName="BrandScroll" Property="HeightRequest" Value="180" />
+            <Setter TargetName="BrandPanel" Property="RowDefinitions" Value="*" />
+            <Setter TargetName="BrandSign" Property="HeightRequest" Value="140" />
             <Setter TargetName="BrandPanel" Property="RowSpacing" Value="0" />
-            <Setter TargetName="BrandSign" Property="HeightRequest" Value="160" />
             <Setter TargetName="WorkshopImage" Property="IsVisible" Value="False" />
             <Setter TargetName="Slogan" Property="IsVisible" Value="False" />
             <Setter TargetName="FormScroll" Property="Grid.Column" Value="0" />
@@ -50,41 +54,47 @@
     </VisualStateManager.VisualStateGroups>
 
     <!-- The original Workshop sign and illustration become a compact banner on small screens. -->
-    <Grid x:Name="BrandPanel"
-          Grid.RowSpan="2"
-          RowDefinitions="Auto,*,Auto"
-          Padding="18"
-          RowSpacing="18"
-          BackgroundColor="{StaticResource WorkshopNavy}">
-      <local:WorkshopSign x:Name="BrandSign"
-                          HeightRequest="160"
-                          MaximumWidthRequest="340"
-                          HorizontalOptions="Fill" />
-      <Image x:Name="WorkshopImage"
-             Grid.Row="1"
-             Source="workshop_illustration.png"
-             Aspect="AspectFit"
-             MaximumHeightRequest="300"
-             SemanticProperties.Description="Workbench, pegboard tools, and navy tool cabinet" />
-      <Label x:Name="Slogan"
-             Grid.Row="2"
-             Text="A little upkeep.&#10;A lot of peace of mind."
-             Style="{StaticResource WorkshopPageHeading}"
-             FontSize="24"
-             TextColor="{StaticResource WorkshopPaper}"
-             HorizontalTextAlignment="Center"
-             Margin="0,0,0,18" />
-    </Grid>
+    <!-- The brand scrolls independently when a desktop window is shorter than the artwork. -->
+    <ScrollView x:Name="BrandScroll" Grid.RowSpan="2">
+      <Grid x:Name="BrandPanel"
+            RowDefinitions="245,341,96"
+            HeightRequest="720"
+            VerticalOptions="Start"
+            Padding="22,24,22,14"
+            RowSpacing="0"
+            BackgroundColor="{StaticResource WorkshopNavy}">
+        <local:WorkshopSign x:Name="BrandSign"
+                            HeightRequest="205"
+                            MaximumWidthRequest="340"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Fill" />
+        <Image x:Name="WorkshopImage"
+               Grid.Row="1"
+               Source="workshop_illustration.png"
+               Aspect="AspectFit"
+               HeightRequest="315"
+               VerticalOptions="Start"
+               SemanticProperties.Description="Workbench, pegboard tools, and navy tool cabinet" />
+        <Label x:Name="Slogan"
+               Grid.Row="2"
+               Text="A little upkeep.&#10;A lot of peace of mind."
+               Style="{StaticResource WorkshopPageHeading}"
+               FontSize="36"
+               TextColor="{StaticResource WorkshopPaper}"
+               HorizontalTextAlignment="Center"
+               MaximumWidthRequest="400"
+               HorizontalOptions="Start" />
+      </Grid>
+    </ScrollView>
 
     <!-- Scrolling keeps every account field and action reachable when the keyboard opens. -->
     <ScrollView x:Name="FormScroll" Grid.Column="1" Grid.RowSpan="2">
-      <Border Margin="18"
+      <Border Margin="16,18"
               Padding="24"
-              MaximumWidthRequest="540"
-              VerticalOptions="Center"
+              VerticalOptions="Start"
               BackgroundColor="{StaticResource WorkshopPaper}"
               Stroke="{StaticResource WorkshopSteel}"
-              StrokeThickness="1">
+              StrokeThickness="0">
         <VerticalStackLayout Spacing="8">
           <Label Text="Create your account" Style="{StaticResource WorkshopPageHeading}" />
           <local:WorkshopRuler WidthRequest="140"
@@ -92,33 +102,48 @@
                                HorizontalOptions="Start"
                                Margin="0,0,0,12" />
           <Label Text="First name" Style="{StaticResource WorkshopLabel}" />
-          <Entry x:Name="FirstNameEntry"
-                 Placeholder="First name"
-                 Style="{StaticResource WorkshopEntry}"
-                 SemanticProperties.Description="First name" />
+          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+                  StrokeShape="Rectangle" Padding="0">
+            <Entry x:Name="FirstNameEntry"
+                   Style="{StaticResource WorkshopEntry}"
+                   HeightRequest="36" MinimumHeightRequest="36"
+                   SemanticProperties.Description="First name" />
+          </Border>
           <Label Text="Last name" Style="{StaticResource WorkshopLabel}" />
-          <Entry x:Name="LastNameEntry"
-                 Placeholder="Last name"
-                 Style="{StaticResource WorkshopEntry}"
-                 SemanticProperties.Description="Last name" />
+          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+                  StrokeShape="Rectangle" Padding="0">
+            <Entry x:Name="LastNameEntry"
+                   Style="{StaticResource WorkshopEntry}"
+                   HeightRequest="36" MinimumHeightRequest="36"
+                   SemanticProperties.Description="Last name" />
+          </Border>
           <Label Text="Username" Style="{StaticResource WorkshopLabel}" />
-          <Entry x:Name="UsernameEntry"
-                 Placeholder="Username"
-                 Style="{StaticResource WorkshopEntry}"
-                 SemanticProperties.Description="Username" />
+          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+                  StrokeShape="Rectangle" Padding="0">
+            <Entry x:Name="UsernameEntry"
+                   Style="{StaticResource WorkshopEntry}"
+                   HeightRequest="36" MinimumHeightRequest="36"
+                   SemanticProperties.Description="Username" />
+          </Border>
           <Label Text="Password" Style="{StaticResource WorkshopLabel}" />
-          <Entry x:Name="PasswordEntry"
-                 Placeholder="Password"
-                 IsPassword="True"
-                 Style="{StaticResource WorkshopEntry}"
-                 SemanticProperties.Description="Password" />
+          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+                  StrokeShape="Rectangle" Padding="0">
+            <Entry x:Name="PasswordEntry"
+                   IsPassword="True"
+                   Style="{StaticResource WorkshopEntry}"
+                   HeightRequest="36" MinimumHeightRequest="36"
+                   SemanticProperties.Description="Password" />
+          </Border>
           <!-- Keep the MAUI version's confirmation field and validation contract. -->
           <Label Text="Confirm password" Style="{StaticResource WorkshopLabel}" />
-          <Entry x:Name="ConfirmPasswordEntry"
-                 Placeholder="Confirm password"
-                 IsPassword="True"
-                 Style="{StaticResource WorkshopEntry}"
-                 SemanticProperties.Description="Confirm password" />
+          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+                  StrokeShape="Rectangle" Padding="0">
+            <Entry x:Name="ConfirmPasswordEntry"
+                   IsPassword="True"
+                   Style="{StaticResource WorkshopEntry}"
+                   HeightRequest="36" MinimumHeightRequest="36"
+                   SemanticProperties.Description="Confirm password" />
+          </Border>
           <FlexLayout Direction="Row" Wrap="Wrap" Margin="0,12,0,0">
             <Button Text="Create Account"
                     Style="{StaticResource WorkshopPrimaryButton}"
