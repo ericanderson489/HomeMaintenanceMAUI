@@ -4,6 +4,8 @@ namespace HomeMaintenanceMAUI {
     /// <summary>Loads the heading, filter control, and full-width empty table.</summary>
     public TasksView() {
       InitializeComponent();
+      // Select after XAML populates Items; this only sets the displayed choice, not a task filter.
+      JobFilterPicker.SelectedIndex = 0;
     }
 
     /// <summary>

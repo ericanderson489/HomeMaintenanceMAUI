@@ -8,20 +8,19 @@
              BackgroundColor="{StaticResource WorkshopBackground}">
   <!-- Registration keeps the existing fields and handlers connected to the team's logic. -->
   <Grid ColumnDefinitions="46*,54*" RowDefinitions="Auto,*">
+    <Grid.Behaviors>
+      <local:WorkshopAccountLayoutBehavior />
+    </Grid.Behaviors>
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup x:Name="AccountLayoutStates">
         <VisualState x:Name="Wide">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="720" />
-          </VisualState.StateTriggers>
           <VisualState.Setters>
-            <Setter TargetName="BrandScroll" Property="Grid.RowSpan" Value="2" />
-            <Setter TargetName="BrandScroll" Property="Grid.ColumnSpan" Value="1" />
-            <Setter TargetName="BrandPanel" Property="HeightRequest" Value="720" />
-            <Setter TargetName="BrandScroll" Property="HeightRequest" Value="-1" />
-            <Setter TargetName="BrandPanel" Property="RowDefinitions" Value="245,341,96" />
-            <Setter TargetName="BrandPanel" Property="RowSpacing" Value="0" />
-            <Setter TargetName="BrandSign" Property="HeightRequest" Value="205" />
+            <Setter TargetName="BrandPanel" Property="Grid.RowSpan" Value="2" />
+            <Setter TargetName="BrandPanel" Property="Grid.ColumnSpan" Value="1" />
+            <Setter TargetName="BrandPanel" Property="HeightRequest" Value="-1" />
+            <Setter TargetName="BrandPanel" Property="RowDefinitions" Value="3*,5*,Auto" />
+            <Setter TargetName="BrandPanel" Property="RowSpacing" Value="18" />
+            <Setter TargetName="BrandSign" Property="HeightRequest" Value="-1" />
             <Setter TargetName="WorkshopImage" Property="IsVisible" Value="True" />
             <Setter TargetName="Slogan" Property="IsVisible" Value="True" />
             <Setter TargetName="FormScroll" Property="Grid.Column" Value="1" />
@@ -31,16 +30,12 @@
           </VisualState.Setters>
         </VisualState>
         <VisualState x:Name="Narrow">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="0" />
-          </VisualState.StateTriggers>
           <VisualState.Setters>
-            <Setter TargetName="BrandScroll" Property="Grid.RowSpan" Value="1" />
-            <Setter TargetName="BrandScroll" Property="Grid.ColumnSpan" Value="2" />
+            <Setter TargetName="BrandPanel" Property="Grid.RowSpan" Value="1" />
+            <Setter TargetName="BrandPanel" Property="Grid.ColumnSpan" Value="2" />
             <Setter TargetName="BrandPanel" Property="HeightRequest" Value="180" />
-            <Setter TargetName="BrandScroll" Property="HeightRequest" Value="180" />
             <Setter TargetName="BrandPanel" Property="RowDefinitions" Value="*" />
-            <Setter TargetName="BrandSign" Property="HeightRequest" Value="140" />
+            <Setter TargetName="BrandSign" Property="HeightRequest" Value="-1" />
             <Setter TargetName="BrandPanel" Property="RowSpacing" Value="0" />
             <Setter TargetName="WorkshopImage" Property="IsVisible" Value="False" />
             <Setter TargetName="Slogan" Property="IsVisible" Value="False" />
@@ -53,40 +48,23 @@
       </VisualStateGroup>
     </VisualStateManager.VisualStateGroups>
 
-    <!-- The original Workshop sign and illustration become a compact banner on small screens. -->
-    <!-- The brand scrolls independently when a desktop window is shorter than the artwork. -->
-    <ScrollView x:Name="BrandScroll" Grid.RowSpan="2">
-      <Grid x:Name="BrandPanel"
-            RowDefinitions="245,341,96"
-            HeightRequest="720"
-            VerticalOptions="Start"
-            Padding="22,24,22,14"
-            RowSpacing="0"
-            BackgroundColor="{StaticResource WorkshopNavy}">
-        <local:WorkshopSign x:Name="BrandSign"
-                            HeightRequest="205"
-                            MaximumWidthRequest="340"
-                            VerticalOptions="Start"
-                            HorizontalOptions="Fill" />
-        <Image x:Name="WorkshopImage"
-               Grid.Row="1"
-               Source="workshop_illustration.png"
-               Aspect="AspectFit"
-               HeightRequest="315"
-               VerticalOptions="Start"
-               SemanticProperties.Description="Workbench, pegboard tools, and navy tool cabinet" />
-        <Label x:Name="Slogan"
-               Grid.Row="2"
-               Text="A little upkeep.&#10;A lot of peace of mind."
-               Style="{StaticResource WorkshopPageHeading}"
-               FontSize="36"
-               TextColor="{StaticResource WorkshopPaper}"
-               HorizontalTextAlignment="Center"
-               MaximumWidthRequest="400"
-               HorizontalOptions="Start" />
-      </Grid>
-    </ScrollView>
-
+    <!-- Star-sized rows grow with the window; the navy panel fills the entire left column. -->
+    <Grid x:Name="BrandPanel" Grid.RowSpan="2"
+          RowDefinitions="3*,5*,Auto" Padding="22,24,22,20" RowSpacing="18"
+          BackgroundColor="{StaticResource WorkshopNavy}">
+      <local:WorkshopSign x:Name="BrandSign"
+                          MinimumHeightRequest="0"
+                          HorizontalOptions="Fill" VerticalOptions="Fill" />
+      <Image x:Name="WorkshopImage" Grid.Row="1"
+             Source="workshop_illustration.png" Aspect="AspectFit"
+             HorizontalOptions="Fill" VerticalOptions="Fill"
+             SemanticProperties.Description="Workbench, pegboard tools, and navy tool cabinet" />
+      <Label x:Name="Slogan" Grid.Row="2"
+             Text="A little upkeep.&#10;A lot of peace of mind."
+             Style="{StaticResource WorkshopPageHeading}" FontSize="36"
+             TextColor="{StaticResource WorkshopPaper}"
+             HorizontalTextAlignment="Center" HorizontalOptions="Fill" />
+    </Grid>
     <!-- Scrolling keeps every account field and action reachable when the keyboard opens. -->
     <ScrollView x:Name="FormScroll" Grid.Column="1" Grid.RowSpan="2">
       <Border Margin="16,18"

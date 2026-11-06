@@ -10,6 +10,10 @@ The visual reference is `HomeMaintenanceApp` branch `ui/workshop-theme`, commit
 - `MainPage` and `CreateAccountPage`: Workshop sign, existing illustration, labeled
   fields, navy/cream panels, and compact layouts. Every existing entry name and
   button handler is preserved, including the MAUI confirmation-password field.
+  The wide-screen navy panel fills its column's entire height; proportional rows
+  scale the sign and illustration with the window. Narrow windows use a compact
+  sign banner above the independently scrollable form. A shared layout behavior
+  selects these states from the measured content width whenever the grid resizes.
 - `DashboardPage`: a `ContentPage` for the existing Shell login destination,
   with Home, Tasks, and Sign out navigation. The previous placeholder was a
   `ContentView`, which is not a Shell navigation page.
@@ -18,6 +22,9 @@ The visual reference is `HomeMaintenanceApp` branch `ui/workshop-theme`, commit
 - `TasksView` and `TaskListView`: filter controls and a full-width task table with
   the empty-state message in its footer, matching the supplied screenshots.
   `JobSheetView` remains available for future wiring but is not displayed.
+  The filter has one external label, starts on All jobs after its items load,
+  and uses a bordered native dropdown. Its Windows theme is scoped to the picker
+  so selected text, the arrow, and menu stay readable against the paper background.
 - `TaskEditorPage`: title, required-notes label, due date, task type, and repeat
   inputs. `new TaskEditorPage()` displays Add; `new TaskEditorPage(true)` displays
   Edit. Neither constructor accepts or alters a task record.
@@ -69,6 +76,11 @@ and routing code is unchanged. XAML event names remain matched to the original
 authentication handlers. Android/iOS/MacCatalyst builds have not been run.
 An isolated Windows preview successfully loads the workspace and its Home
 accessibility tree. Account layout was also visually compared with the reference.
+An isolated Windows runtime check verifies both account pages at 1180x800,
+1900x1050, and 480x800, then restores the original size. The wide branding fills
+the page height, its artwork grows, and the narrow banner spans the content width.
+The same check confirms the native filter starts on All jobs, has no duplicate
+header, and uses its scoped light theme.
 Full interactive and mobile QA remains to be completed on the team's target devices.
 
 For manual review: sign in with an existing development account, switch Home /
