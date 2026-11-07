@@ -1,25 +1,36 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppNotifications;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+namespace HomeMaintenanceMAUI.WinUI;
 
-namespace HomeMaintenanceMAUI.WinUI
+public partial class App : MauiWinUIApplication
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
-    public partial class App : MauiWinUIApplication
+    public App()
     {
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
-        public App()
-        {
-            this.InitializeComponent();
-        }
-
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+        InitializeComponent();
     }
 
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        // Register the callback before registering with Windows.
+        // This project is unpackaged (WindowsPackageType=None): no manifest
+        // COM extension or manually defined application ID is needed.
+        var manager = AppNotificationManager.Default;
+        manager.NotificationInvoked += OnNotificationInvoked;
+        manager.Register();
+
+        base.OnLaunched(args);
+    }
+
+    private static void OnNotificationInvoked(
+        AppNotificationManager sender,
+        AppNotificationActivatedEventArgs args)
+    {
+        // The callback may run on a background thread. If you add UI
+        // navigation later, dispatch it to the UI thread first.
+        System.Diagnostics.Debug.WriteLine(
+            $"Windows notification clicked: {args.Argument}");
+    }
+
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }
