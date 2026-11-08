@@ -12,13 +12,7 @@ namespace HomeMaintenanceMAUI {
     /// Shows the requested handoff message without opening a form or changing tasks.
     /// </summary>
     private async void OnAddTaskClicked(object sender, EventArgs e) {
-      var button = (Button)sender;
-      button.IsEnabled = false;
-      try {
-        await Shell.Current.DisplayAlert("Add task", "keifer work here.", "OK");
-      } finally {
-        button.IsEnabled = true;
-      }
+      await Shell.Current.GoToAsync(nameof(TaskEditorPage));
     }
   }
 }

@@ -16,6 +16,8 @@ public partial class TaskEditorPage : ContentPage {
   /// <param name="isEditing">Whether to display the Edit task caption instead of Add task.</param>
   public TaskEditorPage(bool isEditing) {
     InitializeComponent();
+    TaskTypePicker.ItemsSource = Enum.GetValues(typeof(Category));
+    RepeatPicker.ItemsSource = Enum.GetValues(typeof(Frequency));
     Title = isEditing ? "Edit task" : "Add task";
     EditorHeading.Text = isEditing ? "EDIT TASK" : "ADD TASK";
   }
