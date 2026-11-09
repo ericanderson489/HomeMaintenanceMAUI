@@ -31,7 +31,7 @@
                 Style="{StaticResource WorkshopPicker}">
         </Picker>
         <Label Text="Repeat" Style="{StaticResource WorkshopLabel}" />
-        <Picker x:Name="RepeatPicker" Title="Repeat schedule" SelectedIndex="0"
+        <Picker x:Name="RepeatPicker" Title="Repeat schedule"
                 Style="{StaticResource WorkshopPicker}">
         </Picker>
         <FlexLayout Wrap="Wrap" Margin="0,12,0,0">

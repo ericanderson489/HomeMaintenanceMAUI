@@ -4,8 +4,6 @@ namespace HomeMaintenanceMAUI;
 /// Provides the add/edit task form without validation, task mutation, or persistence.
 /// </summary>
 public partial class TaskEditorPage : ContentPage {
-  private bool _isClosing;
-
   /// <summary>Initializes an empty Add task form suitable for modal presentation.</summary>
   public TaskEditorPage() : this(false) {
   }
@@ -17,7 +15,9 @@ public partial class TaskEditorPage : ContentPage {
   public TaskEditorPage(bool isEditing) {
     InitializeComponent();
     TaskTypePicker.ItemsSource = Enum.GetValues(typeof(Category));
+    TaskTypePicker.SelectedIndex = 0;
     RepeatPicker.ItemsSource = Enum.GetValues(typeof(Frequency));
+    RepeatPicker.SelectedIndex = 0;
     Title = isEditing ? "Edit task" : "Add task";
     EditorHeading.Text = isEditing ? "EDIT TASK" : "ADD TASK";
   }
@@ -26,15 +26,10 @@ public partial class TaskEditorPage : ContentPage {
   /// Closes the modal form, discarding only the inputs held by its native controls.
   /// </summary>
   private async void OnCancelClicked(object sender, EventArgs e) {
-    if (_isClosing) {
-      return;
-    }
+    await Shell.Current.GoToAsync(nameof(DashboardPage));
+  }
 
-    _isClosing = true;
-    try {
-      await Navigation.PopModalAsync();
-    } finally {
-      _isClosing = false;
-    }
+  private void OnSaveClicked(object sender, EventArgs e) {
+
   }
 }
