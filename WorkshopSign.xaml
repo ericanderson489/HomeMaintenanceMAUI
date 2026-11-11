@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HomeMaintenanceMAUI.WorkshopSign"
+             MinimumHeightRequest="120"
+             SemanticProperties.Description="Breachless Bungalow, Home Maintenance Workshop">
+  <!-- Exported at three times its design size from the original WinForms sign drawing. -->
+  <Image Source="workshop_sign.png" Aspect="AspectFit" InputTransparent="True"
+         AutomationProperties.IsInAccessibleTree="False" />
+</ContentView>
