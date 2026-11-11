@@ -61,6 +61,9 @@ namespace HomeMaintenanceMAUI
                     $"Welcome back, {account.GetAccountFirstName()}!",
                     "OK");
 
+                // Capture active account to pass to other content pages
+                UserSession.CurrentAccount = account;
+
                 // Navigate to the dashboard on login.
                 await Shell.Current.GoToAsync(nameof(DashboardPage));
 

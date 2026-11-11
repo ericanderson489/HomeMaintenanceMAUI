@@ -11,7 +11,7 @@ internal sealed record TaskRecord(
     string Type,
     DateTime DueDate,
     Status Status,
-    RepeatSchedule Repeat = RepeatSchedule.None,
+    Frequency Repeat = Frequency.None,
     DateTime? ScheduleAnchor = null,
     int Occurrence = 0,
     Guid? PreviousOccurrenceId = null,

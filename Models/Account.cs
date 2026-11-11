@@ -6,17 +6,19 @@ namespace HomeMaintenanceMAUI.Models;
 // Represents a user account.
 // Stores basic account information and provides password verification.
 // Saving and loading accounts is handled separately by AccountStore.
-internal class Account
-{
-    // Account information cannot be changed after construction.
-    private readonly string m_firstName;
-    private readonly string m_lastName;
-    private readonly string m_userName;
+public class Account {
+  // Account information cannot be changed after construction.
+  private readonly string m_firstName;
+  private readonly string m_lastName;
+  private readonly string m_userName;
 
-    // Stores the password hash and salt, not the actual password.
-    // This is a record type, so it is immutable and cannot be changed after construction.
-    // You can find PasswordRecord in Services/PasswordSecurity.cs.
-    private readonly PasswordRecord m_password;
+  // Stores the password hash and salt, not the actual password.
+  // This is a record type, so it is immutable and cannot be changed after construction.
+  // You can find PasswordRecord in Services/PasswordSecurity.cs.
+  private readonly PasswordRecord m_password;
+
+  // Create a list of tasks within the account to store user tasks
+  private List<Tasks> m_userTasks;
 
     // Creates a new account using information entered during registration.
     public Account(string username, string password,
@@ -34,6 +36,9 @@ internal class Account
         // Convert the password into a salted hash.
         // PasswordSecurity.Hash() is defined in Services/PasswordSecurity.cs.
         m_password = PasswordSecurity.Hash(password);
+        
+        // Initialize task list
+        m_userTasks = new List<Tasks>();
     }
     // Reconstructs an existing account from saved information.
     // Unlike the public constructor, this does not hash the password again.
@@ -46,7 +51,10 @@ internal class Account
 
         // Reuse the previously saved password hash and salt.
         m_password = record.Password;
-    }
+
+        // Initialize task list
+        m_userTasks = new List<Tasks>();
+  }
     // Creates a record containing the account information needed for storage.
     // This does not write anything to disk.
     internal AccountRecord Snapshot()
@@ -85,6 +93,17 @@ internal class Account
     public string GetAccountUserName()
     {
         return m_userName;
+    }
+
+    // Get and Set for m_userTasks
+    public void SetUserTasks(Tasks task) 
+    {
+      m_userTasks.Add(task);
+    }
+
+    public List<Tasks> GetUserTasks() 
+    {
+      return m_userTasks;
     }
 
     // Checks whether a supplied password matches the stored hash.

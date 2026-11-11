@@ -1,3 +1,5 @@
+using HomeMaintenanceMAUI.Services;
+
 namespace HomeMaintenanceMAUI {
   /// <summary>Hosts the Workshop screens reached by the existing successful-login route.</summary>
   public partial class DashboardPage : ContentPage {
@@ -21,8 +23,10 @@ namespace HomeMaintenanceMAUI {
 
     /// <summary>
     /// Returns to the existing login route and removes the workspace navigation entry.
+    /// Sets CurrentAccount to null so that it does not live on in memory as a static variable.
     /// </summary>
     private async void OnSignOutClicked(object sender, EventArgs e) {
+      UserSession.CurrentAccount = null;
       await Shell.Current.GoToAsync("//MainPage");
     }
 
