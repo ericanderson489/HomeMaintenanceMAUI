@@ -57,17 +57,8 @@ namespace HomeMaintenanceMAUI
                     return;
                 }
 
-                // Login succeeded.
-                await DisplayAlert(
-                    "Login Successful",
-                    $"Welcome back, {account.GetAccountFirstName()}!",
-                    "OK");
-
-                // Navigate to the dashboard on login.
-                await Shell.Current.GoToAsync(nameof(DashboardPage));
-
-                // Notify the signed-in user about pending, unarchived tasks:
-                // overdue tasks (before today) and tasks due within 7 days.
+                // Notify the signed-in user immediately after a successful login
+                // about overdue tasks and tasks due within the next seven days.
 #if WINDOWS
                 try
                 {
@@ -87,6 +78,15 @@ namespace HomeMaintenanceMAUI
                         $"Unable to display maintenance reminder: {notificationError}");
                 }
 #endif
+
+                // Login succeeded.
+                await DisplayAlert(
+                    "Login Successful",
+                    $"Welcome back, {account.GetAccountFirstName()}!",
+                    "OK");
+
+                // Navigate to the dashboard on login.
+                await Shell.Current.GoToAsync(nameof(DashboardPage));
 
             }
             catch (InvalidDataException)
