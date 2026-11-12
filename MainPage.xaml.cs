@@ -1,4 +1,4 @@
-﻿using HomeMaintenanceMAUI.Models;
+using HomeMaintenanceMAUI.Models;
 using HomeMaintenanceMAUI.Services;
 
 namespace HomeMaintenanceMAUI
@@ -66,6 +66,28 @@ namespace HomeMaintenanceMAUI
 
                 // Navigate to the dashboard on login.
                 await Shell.Current.GoToAsync(nameof(DashboardPage));
+
+                // Notify the signed-in user about pending, unarchived tasks:
+                // overdue tasks (before today) and tasks due within 7 days.
+#if WINDOWS
+                try
+                {
+                    var tasks = accountStore.LoadTasks(account.GetAccountUserName());
+                    string? reminder = MaintenanceReminderService.BuildLoginReminder(tasks);
+
+                    if (reminder is not null)
+                    {
+                        Platforms.Windows.WindowsNotificationService.SendNotification(
+                            "Maintenance reminders", reminder);
+                    }
+                }
+                catch (Exception notificationError)
+                {
+                    // Notification problems must not undo a successful login.
+                    System.Diagnostics.Debug.WriteLine(
+                        $"Unable to display maintenance reminder: {notificationError}");
+                }
+#endif
 
             }
             catch (InvalidDataException)

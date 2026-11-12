@@ -1,4 +1,3 @@
-﻿
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -65,6 +64,14 @@ internal sealed class AccountStore
         // Return the list of accounts.
         return accounts;
     }
+    // Loads the maintenance tasks for a specific account. Login uses this
+    // because LoadAccounts() creates Account objects without exposing Tasks.
+    public List<TaskRecord> LoadTasks(string username)
+    {
+        string path = GetAccountPath(username);
+        return ReadAccount(path).Tasks.ToList();
+    }
+
     // Saves a newly registered account.
     // Existing usernames cannot be overwritten.
     public void CreateAccount(Account account)
