@@ -35,7 +35,7 @@ public partial class TaskEditorPage : ContentPage {
   private async void OnSaveClicked(object sender, EventArgs e) {
     var errors = new List<string>();
 
-    // Check for null, empty, or whitespace-only text
+    // Validate string inputs for name and description
     if (string.IsNullOrWhiteSpace(TaskTitleEntry.Text))
       errors.Add("• Task title is required.");
 
