@@ -1,4 +1,5 @@
 using HomeMaintenanceMAUI.Services;
+using HomeMaintenanceMAUI.Models; // Added 11/11/26
 
 namespace HomeMaintenanceMAUI {
   /// <summary>Hosts the Workshop screens reached by the existing successful-login route.</summary>
@@ -9,6 +10,31 @@ namespace HomeMaintenanceMAUI {
     public DashboardPage() {
       InitializeComponent();
       ShowWorkspace(showHome: true);
+    }
+    // 
+    protected override async void OnAppearing() {
+      // Reloads the data when the dashboard comes back into view
+      base.OnAppearing();
+
+      var account = UserSession.CurrentAccount;
+      if (account is null)
+        return;
+
+      try {
+        // Reload the account's tasks on sign-in and when returning from Add task.
+        var activeTasks = new AccountStore()
+            .LoadTasks(account.GetAccountUserName())
+            .Where(task => !task.IsArchived && task.Status == Status.Pending)
+            .OrderBy(task => task.DueDate)
+            .ToList();
+
+        TasksView.SetTasks(activeTasks);
+        HomeView.SetTasks(activeTasks);
+      } catch (Exception ex) when (
+            ex is IOException or UnauthorizedAccessException or InvalidDataException) {
+        System.Diagnostics.Debug.WriteLine($"Unable to load dashboard tasks: {ex}");
+        await DisplayAlert("Tasks unavailable", "The saved tasks could not be loaded.", "OK");
+      }
     }
 
     /// <summary>Displays Home in response to desktop or compact navigation.</summary>

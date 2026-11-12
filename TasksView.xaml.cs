@@ -12,9 +12,7 @@ namespace HomeMaintenanceMAUI {
     internal void SetTasks(IReadOnlyList<TaskRecord> activeTasks) {
       JobList.SetTasks(activeTasks);
     }
-    /// <summary>
-    /// Shows the requested handoff message without opening a form or changing tasks.
-    /// </summary>
+    // Opens the editor
     private async void OnAddTaskClicked(object sender, EventArgs e) {
       await Shell.Current.GoToAsync(nameof(TaskEditorPage));
     }

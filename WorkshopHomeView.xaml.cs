@@ -5,20 +5,16 @@ namespace HomeMaintenanceMAUI {
   public partial class WorkshopHomeView : ContentView {
     /// <summary>Requests presentation-only navigation to the Tasks screen.</summary>
     public event EventHandler? ViewTasksRequested;
-
     /// <summary>Loads headings, unbound summary cards, and the upcoming-jobs table.</summary>
     public WorkshopHomeView() {
       InitializeComponent();
     }
-
-    /// <summary>
-    /// Shows the requested handoff message without opening a form or changing tasks.
-    /// </summary>
+    // Opens editor page
     private async void OnAddTaskClicked(object sender, EventArgs e) {
       await Shell.Current.GoToAsync(nameof(TaskEditorPage));
     }
 
-    /// <summary>Asks the workspace to show Tasks without consulting task data.</summary>
+    // Displays task record
     private void OnViewTasksClicked(object sender, EventArgs e) {
       ViewTasksRequested?.Invoke(this, EventArgs.Empty);
     }
@@ -27,7 +23,6 @@ namespace HomeMaintenanceMAUI {
       var upcoming = activeTasks
           .Where(task => task.DueDate.Date >= DateTime.Today)
           .ToList();
-
       UpcomingJobs.SetTasks(upcoming);
     }
   }
