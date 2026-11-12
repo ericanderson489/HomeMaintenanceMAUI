@@ -1,4 +1,3 @@
-﻿
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -65,9 +64,47 @@ internal sealed class AccountStore
         // Return the list of accounts.
         return accounts;
     }
-    // Saves a newly registered account.
-    // Existing usernames cannot be overwritten.
-    public void CreateAccount(Account account)
+    // Loads the maintenance tasks for a specific account. Login uses this
+    // because LoadAccounts() creates Account objects without exposing Tasks.
+    public List<TaskRecord> LoadTasks(string username)
+    {
+        string path = GetAccountPath(username);
+        return ReadAccount(path).Tasks.ToList();
+    }
+    // Method to save a task. Method added 11/11/26
+    public void AddTask(string username, TaskRecord task) {
+    string path = GetAccountPath(username);
+    // Hold the lock from read through replacement so two app instances
+    // can't read the same revision and overwrite each other's changes.
+    using FileStream writeLock = new(
+        path + ".lock", FileMode.OpenOrCreate,
+        FileAccess.Write, FileShare.None);
+
+    AccountRecord account = ReadAccount(path);
+    // Preserve the account details and existing tasks while appending
+    // the new task and advancing the revision.
+    AccountRecord updated = account with {
+      Revision = account.Revision + 1,
+      Tasks = [.. account.Tasks, task]
+    };
+    // Write the updated JSON to a temporary file first. If writing fails,
+    // the existing account file is still intact.
+    string tempPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+    try {
+      using (FileStream stream = new(
+          tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None)) {
+        JsonSerializer.Serialize(stream, updated, JsonOptions);
+        stream.Flush(true);
+      }
+
+      File.Move(tempPath, path, overwrite: true);
+    } finally {
+      File.Delete(tempPath);
+    }
+  }
+  // Saves a newly registered account.
+  // Existing usernames cannot be overwritten.
+  public void CreateAccount(Account account)
     {   // Create a record from the account.
         // Snapshot() is defined in Models/Account.cs.
         AccountRecord record = account.Snapshot();

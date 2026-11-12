@@ -46,6 +46,9 @@
       <Button Text="View all tasks" Style="{StaticResource WorkshopButton}"
               Clicked="OnViewTasksClicked" />
     </FlexLayout>
-    <local:TaskListView Grid.Row="3" EmptyMessage="No tasks yet. Add your first job." />
+    <local:TaskListView x:Name="UpcomingJobs" 
+                        Grid.Row="3" 
+                        EmptyMessage="No tasks yet. Add your first job." 
+                        />
   </Grid>
 </ContentView>

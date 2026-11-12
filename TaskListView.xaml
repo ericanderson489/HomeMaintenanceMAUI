@@ -2,33 +2,32 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HomeMaintenanceMAUI.TaskListView">
-  <!-- The empty body fills the workspace; the message belongs in the footer. -->
   <Border BackgroundColor="{StaticResource WorkshopPaper}" StrokeThickness="0" Padding="8">
     <Border Style="{StaticResource WorkshopCard}" Padding="0">
       <Grid RowDefinitions="Auto,*,Auto" MinimumHeightRequest="180">
-        <Grid ColumnDefinitions="*,156,130" Padding="10,7" ColumnSpacing="0" Margin="3,3,3,0"
+        <!-- Column headings. Keep these widths aligned with the task row template. -->
+        <Grid ColumnDefinitions="2*,*,*" Padding="10,7" ColumnSpacing="0" Margin="3,3,3,0"
               BackgroundColor="{StaticResource WorkshopSteel}">
-          <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="TableWidth">
-              <VisualState x:Name="Wide">
-                <VisualState.StateTriggers>
-                  <AdaptiveTrigger MinWindowWidth="600" />
-                </VisualState.StateTriggers>
-              </VisualState>
-              <VisualState x:Name="Narrow">
-                <VisualState.StateTriggers>
-                  <AdaptiveTrigger MinWindowWidth="0" />
-                </VisualState.StateTriggers>
-                <VisualState.Setters>
-                  <Setter Property="ColumnDefinitions" Value="*,90,80" />
-                </VisualState.Setters>
-              </VisualState>
-            </VisualStateGroup>
-          </VisualStateManager.VisualStateGroups>
           <Label Text="Task" Style="{StaticResource WorkshopLabel}" />
           <Label Grid.Column="1" Text="Due date" Style="{StaticResource WorkshopLabel}" />
           <Label Grid.Column="2" Text="Status" Style="{StaticResource WorkshopLabel}" />
         </Grid>
+        <!-- Task rows. SetTasks in TaskListView.xaml.cs supplies the records. -->
+        <CollectionView x:Name="TaskRows" Grid.Row="1">
+          <CollectionView.ItemTemplate>
+            <DataTemplate>
+              <Grid ColumnDefinitions="2*,*,*" Padding="10,8" Margin="3,0">
+                <Label Text="{Binding Name}" Style="{StaticResource WorkshopLabel}" />
+                <Label Grid.Column="1"
+                       Text="{Binding DueDate, StringFormat='{0:MMM d, yyyy}'}"
+                       Style="{StaticResource WorkshopLabel}" />
+                <Label Grid.Column="2" Text="{Binding Status}"
+                       Style="{StaticResource WorkshopLabel}" />
+              </Grid>
+            </DataTemplate>
+          </CollectionView.ItemTemplate>
+        </CollectionView>
+        <!-- Footer. Contains the details button and the empty-list message. -->
         <Grid Grid.Row="2" RowDefinitions="1,Auto">
           <BoxView Color="{StaticResource WorkshopSteel}" HeightRequest="1" />
           <FlexLayout Grid.Row="1" Padding="0,3,8,3" AlignItems="Center" Wrap="Wrap">
