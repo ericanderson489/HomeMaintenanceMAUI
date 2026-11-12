@@ -1,3 +1,5 @@
+using HomeMaintenanceMAUI.Models.Records; // Added 11/11/26
+
 namespace HomeMaintenanceMAUI {
   /// <summary>Displays the overview without computing counts or reading stored tasks.</summary>
   public partial class WorkshopHomeView : ContentView {
@@ -19,6 +21,14 @@ namespace HomeMaintenanceMAUI {
     /// <summary>Asks the workspace to show Tasks without consulting task data.</summary>
     private void OnViewTasksClicked(object sender, EventArgs e) {
       ViewTasksRequested?.Invoke(this, EventArgs.Empty);
+    }
+    internal void SetTasks(IReadOnlyList<TaskRecord> activeTasks) {
+      // Upcoming Jobs shows tasks due today or later.
+      var upcoming = activeTasks
+          .Where(task => task.DueDate.Date >= DateTime.Today)
+          .ToList();
+
+      UpcomingJobs.SetTasks(upcoming);
     }
   }
 }

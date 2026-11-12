@@ -17,10 +17,10 @@
         <Label Text="Task title" Style="{StaticResource WorkshopLabel}" />
         <Entry x:Name="TaskTitleEntry" Placeholder="Task title"
                Style="{StaticResource WorkshopEntry}" SemanticProperties.Description="Task title" />
-        <Label Text="Description / notes (required)" Style="{StaticResource WorkshopLabel}" />
+        <Label Text="Description / notes (optional)" Style="{StaticResource WorkshopLabel}" />
         <Editor x:Name="TaskNotesEditor" Placeholder="Description / notes"
                 Style="{StaticResource WorkshopEditor}" HeightRequest="120"
-                SemanticProperties.Description="Description or notes, required" />
+                SemanticProperties.Description="Description or notes, optional" />
         <Label Text="Due date" Style="{StaticResource WorkshopLabel}" />
         <DatePicker x:Name="DueDatePicker" Format="MMM d, yyyy"
                     TextColor="{StaticResource WorkshopInk}"

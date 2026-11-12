@@ -1,5 +1,6 @@
 using HomeMaintenanceMAUI.Models;
 using HomeMaintenanceMAUI.Services;
+using HomeMaintenanceMAUI.Models.Records; // Added 11/11/26
 
 namespace HomeMaintenanceMAUI;
 
@@ -31,7 +32,7 @@ public partial class TaskEditorPage : ContentPage {
   private async void OnCancelClicked(object sender, EventArgs e) {
     await Shell.Current.GoToAsync("..");
   }
-
+  // Check Models/Records/TaskRecord.cs and Services/AccountStore.cs
   private async void OnSaveClicked(object sender, EventArgs e) {
     var errors = new List<string>();
 
@@ -56,18 +57,40 @@ public partial class TaskEditorPage : ContentPage {
 
     // Capture input
     string name = TaskTitleEntry.Text!.Trim();
-    string desc = TaskNotesEditor.Text!.Trim();
+    string desc = TaskNotesEditor.Text?.Trim() ?? string.Empty;
     DateTime date = DueDatePicker.Date.Date;
     Category type = (Category)TaskTypePicker.SelectedItem;
     Frequency freq = (Frequency)RepeatPicker.SelectedItem;
 
     // Save task to user account
-    Tasks task = new Tasks(name, desc, date, type, freq);
-    UserSession.CurrentAccount.SetUserTasks(task);
-    await DisplayAlert("Entry Successful", 
-      "The task has been added", 
-      "OK");
-    // Could optionally navigate back to the previous page here as well.
-    // await Shell.Current.GoToAsync("..");
+    var account = UserSession.CurrentAccount;
+    if (account is null) {
+      await DisplayAlert("Sign-in required", "Sign in again to save a task.", "OK");
+      return;
+    }
+
+    // TaskRecord is the JSON storage model in Models/Records/TaskRecord.cs.
+    // AccountStore appends it to the signed-in user's account file.
+    var task = new TaskRecord(
+        Id: Guid.NewGuid(),
+        Name: name,
+        Description: desc,
+        Type: type.ToString(),
+        DueDate: date,
+        Status: Status.Pending,
+        Repeat: freq);
+
+    try {
+      new AccountStore().AddTask(account.GetAccountUserName(), task);
+    } catch (Exception ex) when (
+          ex is IOException or UnauthorizedAccessException or InvalidDataException) {
+      System.Diagnostics.Debug.WriteLine($"Unable to save task: {ex}");
+      await DisplayAlert("Save failed", "The account file could not be updated. Please try again.", "OK");
+      return;
+    }
+
+    await DisplayAlert("Task saved", "The task has been added to your account.", "OK");
+    // Returns to previous page
+    await Shell.Current.GoToAsync("..");
   }
 }

@@ -39,6 +39,9 @@
       </Border>
     </FlexLayout>
     <!-- The reference shows the full-width list until a job is selected. -->
-    <local:TaskListView Grid.Row="2" EmptyMessage="No jobs match this filter." />
+    <local:TaskListView x:Name="JobList"
+                        Grid.Row="2" 
+                        EmptyMessage="No jobs match this filter." 
+                        />
   </Grid>
 </ContentView>
