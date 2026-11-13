@@ -9,85 +9,120 @@
   <ContentPage.Behaviors>
     <local:WorkshopLightThemeBehavior />
   </ContentPage.Behaviors>
-  <!-- The existing editor owns all values and actions; this page supplies their presentation. -->
-  <ScrollView>
-    <VerticalStackLayout Padding="20,24" Spacing="18" MaximumWidthRequest="980"
-                         HorizontalOptions="Fill">
-      <VerticalStackLayout Spacing="8">
-        <Label x:Name="EditorHeading" Text="ADD TASK"
-               Style="{StaticResource WorkshopPageHeading}" />
-        <Label Text="Every job starts with a plan." Style="{StaticResource WorkshopSubtitle}" />
-        <local:WorkshopRuler />
-      </VerticalStackLayout>
+  <!-- The existing editor owns every value and action; only layout responds to the window. -->
+  <Grid x:Name="EditorLayout" Padding="24" RowDefinitions="Auto,*,Auto" RowSpacing="18">
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="EditorLayoutStates">
+        <VisualState x:Name="Wide">
+          <VisualState.Setters>
+            <Setter Property="Padding" Value="24" />
+            <Setter TargetName="FormGrid" Property="ColumnDefinitions" Value="*,340" />
+            <Setter TargetName="FormGrid" Property="RowDefinitions" Value="*" />
+            <Setter TargetName="ScheduleCard" Property="Grid.Column" Value="1" />
+            <Setter TargetName="ScheduleCard" Property="Grid.Row" Value="0" />
+            <Setter TargetName="NotesBorder" Property="HeightRequest" Value="-1" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="Compact">
+          <VisualState.Setters>
+            <Setter Property="Padding" Value="16" />
+            <Setter TargetName="FormGrid" Property="ColumnDefinitions" Value="*" />
+            <Setter TargetName="FormGrid" Property="RowDefinitions" Value="Auto,Auto" />
+            <Setter TargetName="ScheduleCard" Property="Grid.Column" Value="0" />
+            <Setter TargetName="ScheduleCard" Property="Grid.Row" Value="1" />
+            <Setter TargetName="NotesBorder" Property="HeightRequest" Value="180" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
 
-      <Border Style="{StaticResource WorkshopCard}" Padding="0">
-        <VerticalStackLayout Spacing="0">
-          <Border BackgroundColor="{StaticResource WorkshopNavy}" StrokeThickness="0"
-                  StrokeShape="Rectangle" Padding="20,12">
-            <Label Text="JOB DETAILS" Style="{StaticResource WorkshopPageHeading}"
-                   FontSize="26" TextColor="{StaticResource WorkshopPaper}"
-                   SemanticProperties.HeadingLevel="Level2" />
-          </Border>
-
-          <VerticalStackLayout Padding="20" Spacing="10">
-            <!-- Keep the team's named inputs intact for the existing save and edit code. -->
-            <Label Text="Task title" Style="{StaticResource WorkshopLabel}" />
-            <Border Style="{StaticResource WorkshopCard}" Padding="0">
-              <Entry x:Name="TaskTitleEntry" Placeholder="Task title"
-                     Style="{StaticResource WorkshopEntry}" FontSize="20"
-                     SemanticProperties.Description="Task title" />
-            </Border>
-            <Label Text="Description / notes (optional)" Style="{StaticResource WorkshopLabel}"
-                   Margin="0,6,0,0" />
-            <Border Style="{StaticResource WorkshopCard}" Padding="0">
-              <Editor x:Name="TaskNotesEditor" Placeholder="Description / notes"
-                      Style="{StaticResource WorkshopEditor}" FontSize="18" HeightRequest="120"
-                      SemanticProperties.Description="Description or notes, optional" />
-            </Border>
-
-            <!-- Schedule fields wrap as space narrows, preserving their original defaults. -->
-            <FlexLayout Direction="Row" Wrap="Wrap" AlignItems="Start" Margin="0,10,-16,0">
-              <VerticalStackLayout FlexLayout.Basis="240" FlexLayout.Grow="1"
-                                   Spacing="10" Margin="0,0,16,12">
-                <Label Text="Due date" Style="{StaticResource WorkshopLabel}" />
-                <Border Style="{StaticResource WorkshopCard}" Padding="0">
-                  <DatePicker x:Name="DueDatePicker" Format="MMM d, yyyy" FontSize="20"
-                              FontFamily="{StaticResource WorkshopBodyFont}"
-                              MinimumHeightRequest="44"
-                              TextColor="{StaticResource WorkshopInk}"
-                              BackgroundColor="{StaticResource WorkshopPaper}"
-                              SemanticProperties.Description="Due date" />
-                </Border>
-              </VerticalStackLayout>
-              <VerticalStackLayout FlexLayout.Basis="240" FlexLayout.Grow="1"
-                                   Spacing="10" Margin="0,0,16,12">
-                <Label Text="Task type" Style="{StaticResource WorkshopLabel}" />
-                <Border Style="{StaticResource WorkshopCard}" Padding="0">
-                  <Picker x:Name="TaskTypePicker" Style="{StaticResource WorkshopPicker}"
-                          FontSize="20" SemanticProperties.Description="Task type" />
-                </Border>
-              </VerticalStackLayout>
-              <VerticalStackLayout FlexLayout.Basis="240" FlexLayout.Grow="1"
-                                   Spacing="10" Margin="0,0,16,12">
-                <Label Text="Repeat" Style="{StaticResource WorkshopLabel}" />
-                <Border Style="{StaticResource WorkshopCard}" Padding="0">
-                  <Picker x:Name="RepeatPicker" Style="{StaticResource WorkshopPicker}"
-                          FontSize="20" SemanticProperties.Description="Repeat schedule" />
-                </Border>
-              </VerticalStackLayout>
-            </FlexLayout>
-          </VerticalStackLayout>
-
-          <BoxView Color="{StaticResource WorkshopSteel}" HeightRequest="1" />
-          <FlexLayout Wrap="Wrap" Padding="20,16,20,6">
-            <!-- Preserve both existing handlers and the enabled Save action. -->
-            <Button Text="Save" Style="{StaticResource WorkshopPrimaryButton}"
-                    IsEnabled="True" Clicked="OnSaveClicked" Margin="0,0,10,10" />
-            <Button Text="Cancel" Style="{StaticResource WorkshopButton}"
-                    Clicked="OnCancelClicked" Margin="0,0,0,10" />
-          </FlexLayout>
-        </VerticalStackLayout>
-      </Border>
+    <VerticalStackLayout Spacing="8">
+      <Label x:Name="EditorHeading" Text="ADD TASK"
+             Style="{StaticResource WorkshopPageHeading}" />
+      <Label Text="Every job starts with a plan." Style="{StaticResource WorkshopSubtitle}" />
+      <local:WorkshopRuler />
     </VerticalStackLayout>
-  </ScrollView>
+
+    <!-- Match the viewport height so the notes area grows on a maximized desktop. -->
+    <ScrollView x:Name="FormScroll" Grid.Row="1">
+      <ScrollView.Behaviors>
+        <local:WorkshopTaskLayoutBehavior />
+      </ScrollView.Behaviors>
+      <Grid x:Name="FormGrid" ColumnDefinitions="*,340" RowDefinitions="*"
+            ColumnSpacing="18" RowSpacing="18">
+        <Border x:Name="DetailsCard" Style="{StaticResource WorkshopCard}" Padding="0">
+          <Grid RowDefinitions="Auto,*">
+            <Border BackgroundColor="{StaticResource WorkshopNavy}" StrokeThickness="0"
+                    StrokeShape="Rectangle" Padding="20,12">
+              <Label Text="JOB DETAILS" Style="{StaticResource WorkshopPageHeading}"
+                     FontSize="26" TextColor="{StaticResource WorkshopPaper}"
+                     SemanticProperties.HeadingLevel="Level2" />
+            </Border>
+            <!-- Named controls and their types stay connected to the team's existing code. -->
+            <Grid Grid.Row="1" Padding="20" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="10">
+              <Label Text="Task title" Style="{StaticResource WorkshopLabel}" />
+              <Border Grid.Row="1" Style="{StaticResource WorkshopCard}" Padding="0">
+                <Entry x:Name="TaskTitleEntry" Placeholder="Task title"
+                       Style="{StaticResource WorkshopEntry}" FontSize="20"
+                       SemanticProperties.Description="Task title" />
+              </Border>
+              <Label Grid.Row="2" Text="Description / notes (optional)" Margin="0,6,0,0"
+                     Style="{StaticResource WorkshopLabel}" />
+              <Border x:Name="NotesBorder" Grid.Row="3"
+                      Style="{StaticResource WorkshopCard}" Padding="0">
+                <Editor x:Name="TaskNotesEditor" Placeholder="Description / notes"
+                        Style="{StaticResource WorkshopEditor}" FontSize="18"
+                        VerticalOptions="Fill"
+                        SemanticProperties.Description="Description or notes, optional" />
+              </Border>
+            </Grid>
+          </Grid>
+        </Border>
+
+        <Border x:Name="ScheduleCard" Grid.Column="1" VerticalOptions="Start"
+                Style="{StaticResource WorkshopCard}" Padding="0">
+          <VerticalStackLayout Spacing="0">
+            <Border BackgroundColor="{StaticResource WorkshopNavy}" StrokeThickness="0"
+                    StrokeShape="Rectangle" Padding="20,12">
+              <Label Text="SCHEDULE" Style="{StaticResource WorkshopPageHeading}"
+                     FontSize="26" TextColor="{StaticResource WorkshopPaper}"
+                     SemanticProperties.HeadingLevel="Level2" />
+            </Border>
+            <!-- Scheduling values, choices, defaults, and validation remain code-owned. -->
+            <VerticalStackLayout Padding="20" Spacing="10">
+              <Label Text="Due date" Style="{StaticResource WorkshopLabel}" />
+              <Border Style="{StaticResource WorkshopCard}" Padding="0">
+                <DatePicker x:Name="DueDatePicker" Format="MMM d, yyyy" FontSize="20"
+                            FontFamily="{StaticResource WorkshopBodyFont}"
+                            MinimumHeightRequest="44"
+                            TextColor="{StaticResource WorkshopInk}"
+                            BackgroundColor="{StaticResource WorkshopPaper}"
+                            SemanticProperties.Description="Due date" />
+              </Border>
+              <Label Text="Task type" Style="{StaticResource WorkshopLabel}" Margin="0,10,0,0" />
+              <Border Style="{StaticResource WorkshopCard}" Padding="0">
+                <Picker x:Name="TaskTypePicker" Style="{StaticResource WorkshopPicker}"
+                        FontSize="20" SemanticProperties.Description="Task type" />
+              </Border>
+              <Label Text="Repeat" Style="{StaticResource WorkshopLabel}" Margin="0,10,0,0" />
+              <Border Style="{StaticResource WorkshopCard}" Padding="0">
+                <Picker x:Name="RepeatPicker" Style="{StaticResource WorkshopPicker}"
+                        FontSize="20" SemanticProperties.Description="Repeat schedule" />
+              </Border>
+            </VerticalStackLayout>
+          </VerticalStackLayout>
+        </Border>
+      </Grid>
+    </ScrollView>
+
+    <!-- Actions remain visible while the fields scroll; their existing handlers are unchanged. -->
+    <Border Grid.Row="2" Style="{StaticResource WorkshopCard}" Padding="16,12,16,2">
+      <FlexLayout Wrap="Wrap" JustifyContent="End">
+        <Button Text="Save" Style="{StaticResource WorkshopPrimaryButton}"
+                IsEnabled="True" Clicked="OnSaveClicked" Margin="0,0,10,10" />
+        <Button Text="Cancel" Style="{StaticResource WorkshopButton}"
+                Clicked="OnCancelClicked" Margin="0,0,0,10" />
+      </FlexLayout>
+    </Border>
+  </Grid>
 </ContentPage>

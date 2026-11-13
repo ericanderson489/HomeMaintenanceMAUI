@@ -29,8 +29,12 @@ work at `b6b8e9315d0f24ac4b0255d06b5857b94f428f12`.
   The filter has one external label, starts on All jobs after its items load,
   and uses a bordered native dropdown. Its Windows theme is scoped to the picker
   so selected text, the arrow, and menu stay readable against the paper background.
-- `TaskEditorPage`: the existing task form in a paper card with a navy heading,
-  outlined inputs, and gold Save button. Schedule fields wrap on smaller screens.
+- `TaskEditorPage`: the existing task form in paper panels with navy headings,
+  outlined inputs, and a gold Save button. The desktop form fills the available
+  window: details and notes expand beside a 340-unit schedule panel. Smaller or
+  shorter windows stack those same panels in a scrollable area. Save and Cancel
+  remain visible in a fixed footer. `WorkshopTaskLayoutBehavior` responds to the
+  measured viewport size when the window is resized, maximized, or restored.
   The original names, control types, Save/Cancel handlers, optional notes,
   enum choices, and default values are preserved. `WorkshopLightThemeBehavior`
   gives native Windows fields readable text and icons on the paper background.
@@ -84,6 +88,11 @@ An isolated Windows preview renders Add and Edit captions, checks the form at
 enum/date defaults. It also checks Save remains enabled, Cancel returns to the
 dashboard, and Home / Tasks / Renovations select the expected view. The compact
 navigation layout is rendered separately. The preview does not save any tasks.
+A follow-up task-form preview checks desktop, large, narrow, and short windows,
+then maximizes and restores the native Windows window. It verifies that details
+fill the viewport, controls stay within its width, Save and Cancel remain visible,
+and draft text, date, and picker selections survive each layout change. Both
+Add and Edit captions are rendered in the maximized window.
 An isolated Windows preview successfully loads the workspace and its Home
 accessibility tree. Account layout was also visually compared with the reference.
 An isolated Windows runtime check verifies both account pages at 1180x800,
