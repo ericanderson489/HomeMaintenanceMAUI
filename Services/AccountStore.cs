@@ -102,6 +102,80 @@ internal sealed class AccountStore
       File.Delete(tempPath);
     }
   }
+  /// <summary>
+  /// Replaces one unchanged task by ID while retaining its position and lifecycle metadata.
+  /// </summary>
+  /// <param name="username">The account that owns the task.</param>
+  /// <param name="original">The snapshot shown when the editor opened.</param>
+  /// <param name="edited">The five editable values submitted by the form.</param>
+  /// <returns>The record actually written to the account file.</returns>
+  /// <exception cref="InvalidOperationException">
+  /// The task was removed or changed after the editor opened.
+  /// </exception>
+  public TaskRecord UpdateTask(string username, TaskRecord original, TaskRecord edited) {
+    // BEFORE: No UpdateTask method existed. The only task-save method, AddTask, used:
+    // AccountRecord updated = account with {
+    //   Revision = account.Revision + 1,
+    //   Tasks = [.. account.Tasks, task]
+    // };
+    // AFTER: AddTask above is unchanged. This new method replaces a matching list slot:
+    // tasks[index] = saved;
+    // AccountRecord updated = account with {
+    //   Revision = account.Revision + 1,
+    //   Tasks = tasks
+    // };
+    // The replacement keeps the same ID, task count, and list order instead of appending.
+    if (edited.Id != original.Id) {
+      throw new ArgumentException("An edit must keep the original task ID.", nameof(edited));
+    }
+
+    string path = GetAccountPath(username);
+    // NEW: Use the same exclusive lock as AddTask from read through file replacement.
+    using FileStream writeLock = new(
+        path + ".lock", FileMode.OpenOrCreate,
+        FileAccess.Write, FileShare.None);
+    AccountRecord account = ReadAccount(path);
+    List<TaskRecord> tasks = account.Tasks.ToList();
+    int index = tasks.FindIndex(task => task.Id == original.Id);
+    if (index < 0 || tasks[index] != original) {
+      throw new InvalidOperationException(
+          "This task was changed or removed. Reopen it from the task list before editing.");
+    }
+    if (tasks.Count(task => task.Id == original.Id) != 1) {
+      throw new InvalidDataException("The account contains duplicate task IDs.");
+    }
+
+    // NEW: Copy only form fields onto the stored record. No prior update code existed.
+    // Id, Status, ScheduleAnchor, Occurrence, PreviousOccurrenceId, CompletedAt, and
+    // IsArchived retain their stored values; recurrence/completion logic is not changed.
+    TaskRecord saved = tasks[index] with {
+      Name = edited.Name,
+      Description = edited.Description,
+      Type = edited.Type,
+      DueDate = edited.DueDate,
+      Repeat = edited.Repeat
+    };
+    tasks[index] = saved;
+    AccountRecord updated = account with {
+      Revision = account.Revision + 1,
+      Tasks = tasks
+    };
+
+    // NEW: Match AddTask's temporary-file write so a failed write preserves the old file.
+    string tempPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+    try {
+      using (FileStream stream = new(
+          tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None)) {
+        JsonSerializer.Serialize(stream, updated, JsonOptions);
+        stream.Flush(true);
+      }
+      File.Move(tempPath, path, overwrite: true);
+    } finally {
+      File.Delete(tempPath);
+    }
+    return saved;
+  }
+
   // Saves a newly registered account.
   // Existing usernames cannot be overwritten.
   public void CreateAccount(Account account)

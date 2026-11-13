@@ -115,7 +115,9 @@
       </Grid>
     </ScrollView>
 
-    <!-- Actions remain visible while the fields scroll; their existing handlers are unchanged. -->
+    <!-- Actions remain visible while fields scroll. Save now adds or updates the selected task;
+         BEFORE: the existing OnSaveClicked handler always added a new record.
+         AFTER: the same Clicked="OnSaveClicked" binding uses the approved add/edit save path. -->
     <Border Grid.Row="2" Style="{StaticResource WorkshopCard}" Padding="16,12,16,2">
       <FlexLayout Wrap="Wrap" JustifyContent="End">
         <Button Text="Save" Style="{StaticResource WorkshopPrimaryButton}"

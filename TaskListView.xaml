@@ -1,28 +1,55 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:records="clr-namespace:HomeMaintenanceMAUI.Models.Records"
              x:Class="HomeMaintenanceMAUI.TaskListView">
   <Border BackgroundColor="{StaticResource WorkshopPaper}" StrokeThickness="0" Padding="8">
     <Border Style="{StaticResource WorkshopCard}" Padding="0">
       <Grid RowDefinitions="Auto,*,Auto" MinimumHeightRequest="180">
         <!-- Column headings. Keep these widths aligned with the task row template. -->
-        <Grid ColumnDefinitions="2*,*,*" Padding="10,7" ColumnSpacing="0" Margin="3,3,3,0"
+        <Grid ColumnDefinitions="2*,*,*,24" Padding="10,7" ColumnSpacing="0" Margin="3,3,3,0"
               BackgroundColor="{StaticResource WorkshopSteel}">
           <Label Text="Task" Style="{StaticResource WorkshopLabel}" />
           <Label Grid.Column="1" Text="Due date" Style="{StaticResource WorkshopLabel}" />
           <Label Grid.Column="2" Text="Status" Style="{StaticResource WorkshopLabel}" />
         </Grid>
-        <!-- Task rows. SetTasks in TaskListView.xaml.cs supplies the records. -->
-        <CollectionView x:Name="TaskRows" Grid.Row="1">
+        <!-- BEFORE: <CollectionView x:Name="TaskRows" Grid.Row="1">
+             AFTER: SelectionMode="Single" and SelectionChanged="OnTaskSelectionChanged"
+             are added below; Tapped="OnTaskTapped" opens the clicked row's details.
+             BEFORE: <DataTemplate> and ColumnDefinitions="2*,*,*".
+             AFTER: x:DataType="records:TaskRecord" gives typed bindings; the fourth 24-unit
+             column displays a chevron to indicate that each row opens another page. -->
+        <CollectionView x:Name="TaskRows" Grid.Row="1" SelectionMode="Single"
+                        SelectionChanged="OnTaskSelectionChanged">
           <CollectionView.ItemTemplate>
-            <DataTemplate>
-              <Grid ColumnDefinitions="2*,*,*" Padding="10,8" Margin="3,0">
+            <DataTemplate x:DataType="records:TaskRecord">
+              <Grid ColumnDefinitions="2*,*,*,24" Padding="10,8" Margin="3,0"
+                    MinimumHeightRequest="48" BackgroundColor="{StaticResource WorkshopPaper}"
+                    SemanticProperties.Hint="Open task details">
+                <Grid.GestureRecognizers>
+                  <TapGestureRecognizer Tapped="OnTaskTapped" CommandParameter="{Binding .}" />
+                </Grid.GestureRecognizers>
+                <!-- Highlight only the selected row; this does not change the task itself. -->
+                <VisualStateManager.VisualStateGroups>
+                  <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Selected">
+                      <VisualState.Setters>
+                        <Setter Property="BackgroundColor"
+                                Value="{StaticResource WorkshopSelected}" />
+                      </VisualState.Setters>
+                    </VisualState>
+                  </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
                 <Label Text="{Binding Name}" Style="{StaticResource WorkshopLabel}" />
                 <Label Grid.Column="1"
                        Text="{Binding DueDate, StringFormat='{0:MMM d, yyyy}'}"
                        Style="{StaticResource WorkshopLabel}" />
                 <Label Grid.Column="2" Text="{Binding Status}"
                        Style="{StaticResource WorkshopLabel}" />
+                <Label Grid.Column="3" Text="›" Style="{StaticResource WorkshopSubtitle}"
+                       FontSize="24" HorizontalTextAlignment="Center"
+                       InputTransparent="True" AutomationProperties.IsInAccessibleTree="False" />
               </Grid>
             </DataTemplate>
           </CollectionView.ItemTemplate>
@@ -31,9 +58,18 @@
         <Grid Grid.Row="2" RowDefinitions="1,Auto">
           <BoxView Color="{StaticResource WorkshopSteel}" HeightRequest="1" />
           <FlexLayout Grid.Row="1" Padding="0,3,8,3" AlignItems="Center" Wrap="Wrap">
-            <!-- This inactive action retains the source button's visible ochre label. -->
-            <Button Text="View details" IsEnabled="False" Margin="0,0,12,0"
-                    Style="{StaticResource WorkshopInactiveButton}" />
+            <!-- BEFORE:
+                 <Button Text="View details" IsEnabled="False" Margin="0,0,12,0"
+                         Style="{StaticResource WorkshopInactiveButton}" />
+                 AFTER: The button below gains x:Name="ViewDetailsButton",
+                 Clicked="OnViewDetailsClicked", and the regular WorkshopButton style.
+                 It starts disabled and becomes enabled when a task is selected. -->
+            <Button x:Name="ViewDetailsButton" Text="View details" IsEnabled="False"
+                    Clicked="OnViewDetailsClicked" Margin="0,0,12,0"
+                    Style="{StaticResource WorkshopButton}" />
+            <Label x:Name="SelectionHintLabel" Text="Click a task to view its details."
+                   IsVisible="False" Style="{StaticResource WorkshopSubtitle}"
+                   VerticalOptions="Center" />
             <Label x:Name="EmptyMessageLabel"
                    Style="{StaticResource WorkshopLabel}" VerticalOptions="Center" />
           </FlexLayout>

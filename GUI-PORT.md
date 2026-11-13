@@ -29,16 +29,25 @@ work at `b6b8e9315d0f24ac4b0255d06b5857b94f428f12`.
   The filter has one external label, starts on All jobs after its items load,
   and uses a bordered native dropdown. Its Windows theme is scoped to the picker
   so selected text, the arrow, and menu stay readable against the paper background.
+  Task rows open their read-only details when clicked. Selecting a row also enables
+  the View details footer button for keyboard navigation. The row template uses
+  compiled bindings to the existing record without changing its data.
+- `TaskDetailsPage`: displays the selected task's name, notes, due date, status,
+  type, and repeat value. Empty notes show an explicit fallback. The page uses the
+  same responsive panels and fixed footer as the task form. Close returns to the
+  list; Edit task opens a populated editor for that same task. A successful save
+  refreshes the details and supplies the newest record for subsequent edits.
 - `TaskEditorPage`: the existing task form in paper panels with navy headings,
   outlined inputs, and a gold Save button. The desktop form fills the available
   window: details and notes expand beside a 340-unit schedule panel. Smaller or
   shorter windows stack those same panels in a scrollable area. Save and Cancel
   remain visible in a fixed footer. `WorkshopTaskLayoutBehavior` responds to the
   measured viewport size when the window is resized, maximized, or restored.
-  The original names, control types, Save/Cancel handlers, optional notes,
-  enum choices, and default values are preserved. `WorkshopLightThemeBehavior`
+  The original control names/types, optional notes, Add defaults, and validation
+  are preserved. `WorkshopLightThemeBehavior`
   gives native Windows fields readable text and icons on the paper background.
-  The existing constructor still selects the Add or Edit caption.
+  The existing constructors still select the caption. The new record overload
+  loads the selected task; Save updates its existing ID instead of adding a copy.
 - `WorkshopSign`, `WorkshopRuler`, and `Resources/Styles/Workshop.xaml`: shared
   branding, typography, and explicit styles using the existing palette.
   `Resources/Images/workshop_sign.png` is a transparent, high-resolution export
@@ -46,18 +55,31 @@ work at `b6b8e9315d0f24ac4b0255d06b5857b94f428f12`.
 
 ## Behavior boundary
 
-The merged team code now opens the task editor, validates and saves tasks,
-and reloads the task lists. This GUI update preserves that behavior. In particular,
-`TaskEditorPage.xaml.cs` is unchanged, including its existing Add/Edit constructor,
-validation, save behavior, and Cancel route. The update does not implement any
-additional task-editing behavior.
+The user approved two task-editing changes after reviewing the GUI-only details
+page: `TaskEditorPage.xaml.cs` now loads and saves an existing task, and
+`Services/AccountStore.cs` adds `UpdateTask`. Comments identify the exact old
+save expressions and their replacements, and identify new code with no prior
+equivalent. The original AddTask implementation remains unchanged.
+
+The details page receives the immutable record already displayed by the list.
+It does not load or write account files, and closing it does not save anything.
+The details page opens the editor with the selected record and refreshes through
+a save notification. The store replaces one matching ID under the existing file
+lock and temporary-file write pattern. Only name, description, type, due date,
+and repeat change; task count/order, status, recurrence history, completion,
+archive state, other tasks, and account credentials are retained. Missing or
+externally changed tasks are rejected instead of appended or overwritten.
+The existing title and future-date validation remains in place, including when
+editing an overdue task. Cancel does not save. The Add route still creates a new ID.
 
 The new Renovations handler only selects its placeholder view. Existing task
 loading and sign-out code in `DashboardPage` are unchanged. The task filter and
 other task actions retain their merged behavior.
 
-`Models/`, `Services/`, authentication, routing, application startup, platform
-code, and project targets/packages are unchanged from the merged baseline.
+Except for the approved new AccountStore method, services remain unchanged.
+Models, authentication, routing, startup, platform code, and project targets/packages
+are unchanged from the merged baseline. After local review, the user approved
+publishing the details/editor changes on the separate `murdock-edit-task` branch.
 
 ## Coding convention
 
@@ -69,8 +91,8 @@ records the formatting conventions without reformatting the team's existing code
 
 ## Validation
 
-The themed form and Renovations tab build successfully for Windows with zero
-errors. Three compiled-binding warnings remain in the unchanged `TaskListView.xaml`.
+The GUI builds successfully for Windows with zero warnings and zero errors.
+The task row template now declares its data type for compiled bindings.
 Build using:
 
 ```powershell
@@ -79,10 +101,21 @@ dotnet build HomeMaintenanceMAUI.csproj `
   -p:TargetFrameworks=net9.0-windows10.0.19041.0
 ```
 
-Diff checks against the merged baseline confirm that task creation/editing,
-model, service, authentication, startup, and routing code is unchanged. Named task
-controls retain their types and input defaults, and Save/Cancel keep their existing
-handlers. Android/iOS/MacCatalyst builds have not been run.
+Diff checks confirm that business changes are limited to the approved editor and
+account-store files. Named task controls retain their types and Add defaults.
+Android/iOS/MacCatalyst builds have not been run.
+The approved edit path passes an isolated storage harness (9 checks / 29 assertions)
+covering replacement, metadata preservation, stale/missing/duplicate IDs, file locking,
+unrelated changes, and the unchanged Add path. A Windows GUI integration preview
+verifies click-to-details, populated editing, two successive saves without duplicates,
+rapid Save protection, Cancel, refreshed details/dashboard, stale-edit feedback,
+and normal Add. It renders regular, maximized, and narrow editor layouts. Test account
+files live only in a separate workspace test directory, never the user's account directory.
+An isolated sample-data preview checks details navigation from Home and Tasks,
+the selected task's displayed values, empty notes, list selection reset, repeated
+click protection, and reopening the same row after Close. Narrow and maximized
+details layouts keep the footer visible. A native Windows click on the sample
+task name also opens its matching details. No saved account data is used or changed.
 An isolated Windows preview renders Add and Edit captions, checks the form at
 1180- and 480-unit window widths, and verifies native field contrast and unchanged
 enum/date defaults. It also checks Save remains enabled, Cancel returns to the
