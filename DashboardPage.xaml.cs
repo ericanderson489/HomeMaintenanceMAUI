@@ -11,7 +11,7 @@ namespace HomeMaintenanceMAUI {
       InitializeComponent();
       ShowWorkspace(HomeView);
     }
-    // 
+    /// <summary>Reloads the task lists and display totals when the dashboard becomes visible.</summary>
     protected override async void OnAppearing() {
       // Reloads the data when the dashboard comes back into view
       base.OnAppearing();
@@ -21,15 +21,30 @@ namespace HomeMaintenanceMAUI {
         return;
 
       try {
-        // Reload the account's tasks on sign-in and when returning from Add task.
-        var activeTasks = new AccountStore()
-            .LoadTasks(account.GetAccountUserName())
+        // BEFORE:
+        // var activeTasks = new AccountStore()
+        //     .LoadTasks(account.GetAccountUserName())
+        //     .Where(task => !task.IsArchived && task.Status == Status.Pending)
+        //     .OrderBy(task => task.DueDate)
+        //     .ToList();
+        // AFTER: Retain the result of the same single read for the summary, then apply
+        // the unchanged pending/unarchived filter and ordering to both existing lists:
+        // var tasks = new AccountStore().LoadTasks(account.GetAccountUserName());
+        // var activeTasks = tasks
+        //     .Where(task => !task.IsArchived && task.Status == Status.Pending)
+        //     .OrderBy(task => task.DueDate)
+        //     .ToList();
+        var tasks = new AccountStore().LoadTasks(account.GetAccountUserName());
+        var activeTasks = tasks
             .Where(task => !task.IsArchived && task.Status == Status.Pending)
             .OrderBy(task => task.DueDate)
             .ToList();
 
         TasksView.SetTasks(activeTasks);
         HomeView.SetTasks(activeTasks);
+        // NEW: No summary was supplied before. Include completed records for Finished;
+        // the two list inputs above keep their existing pending/unarchived behavior.
+        HomeView.SetTaskSummary(tasks);
       } catch (Exception ex) when (
             ex is IOException or UnauthorizedAccessException or InvalidDataException) {
         System.Diagnostics.Debug.WriteLine($"Unable to load dashboard tasks: {ex}");

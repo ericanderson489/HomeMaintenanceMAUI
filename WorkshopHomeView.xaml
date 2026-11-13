@@ -17,23 +17,35 @@
       <local:WorkshopRuler />
     </VerticalStackLayout>
 
-    <!-- Zeroes reproduce the reference's empty visual state; no task totals are calculated. -->
+    <!-- BEFORE: Each label had only literal Text="0  ..." and stayed at zero.
+         AFTER: The labels below have names so SetTaskSummary can display the loaded totals.
+         The zero text remains the initial empty state until the dashboard supplies tasks. -->
     <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{StaticResource WorkshopPaper}">
       <Border Style="{StaticResource WorkshopCard}" Padding="14,16">
-        <Label Text="0  On the bench" Style="{StaticResource WorkshopLabel}" FontSize="23"
+        <!-- BEFORE: <Label Text="0  On the bench"; AFTER: add x:Name="OnBenchSummaryLabel". -->
+        <Label x:Name="OnBenchSummaryLabel" Text="0  On the bench"
+               Style="{StaticResource WorkshopLabel}" FontSize="23"
                FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
       </Border>
       <Border Grid.Column="1" Style="{StaticResource WorkshopCard}" Padding="14,16">
-        <Label Text="0  Due soon" Style="{StaticResource WorkshopLabel}" FontSize="23"
+        <!-- BEFORE: <Label Text="0  Due soon"; AFTER: add x:Name="DueSoonSummaryLabel". -->
+        <Label x:Name="DueSoonSummaryLabel" Text="0  Due soon"
+               Style="{StaticResource WorkshopLabel}" FontSize="23"
                FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
       </Border>
       <Border Grid.Column="2" Style="{StaticResource WorkshopCard}" Padding="14,16">
-        <Label Text="0  Overdue" Style="{StaticResource WorkshopLabel}" FontSize="23"
+        <!-- BEFORE: <Label Text="0  Overdue"; AFTER: add x:Name="OverdueSummaryLabel". -->
+        <Label x:Name="OverdueSummaryLabel" Text="0  Overdue"
+               Style="{StaticResource WorkshopLabel}" FontSize="23"
                FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
                TextColor="{StaticResource WorkshopRed}" />
       </Border>
       <Border Grid.Column="3" Style="{StaticResource WorkshopCard}" Padding="14,16">
-        <Label Text="0  Finished" Style="{StaticResource WorkshopLabel}" FontSize="23"
+        <!-- BEFORE: <Label Text="0  Finished"; AFTER: add x:Name="FinishedSummaryLabel".
+             The displayed total includes completed tasks that have not been archived. -->
+        <Label x:Name="FinishedSummaryLabel" Text="0  Finished"
+               ToolTipProperties.Text="Completed tasks waiting for archive"
+               Style="{StaticResource WorkshopLabel}" FontSize="23"
                FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
       </Border>
     </Grid>
