@@ -27,7 +27,7 @@
     </VisualStateManager.VisualStateGroups>
     <!-- Both navigation layouts use the same presentation-only event handlers. -->
     <Grid x:Name="Sidebar" Grid.RowSpan="2" Padding="12,12,20,16"
-          RowDefinitions="155,50,50,*,50" RowSpacing="6"
+          RowDefinitions="155,50,50,50,*,50" RowSpacing="6"
           BackgroundColor="{StaticResource WorkshopNavy}">
       <local:WorkshopSign Margin="0,0,0,20" />
       <local:WorkshopNavigationButton x:Name="HomeButton" Grid.Row="1" Text="Home"
@@ -36,26 +36,36 @@
       <local:WorkshopNavigationButton x:Name="TasksButton" Grid.Row="2" Text="Tasks"
               Clicked="OnTasksClicked"
               Style="{StaticResource WorkshopNavigationButton}" />
-      <Button Grid.Row="4" Text="Sign out" Clicked="OnSignOutClicked"
+      <local:WorkshopNavigationButton x:Name="RenovationsButton" Grid.Row="3" Text="Renovations"
+              Clicked="OnRenovationsClicked"
+              Style="{StaticResource WorkshopNavigationButton}" />
+      <Button Grid.Row="5" Text="Sign out" Clicked="OnSignOutClicked"
               HorizontalOptions="Start"
               Style="{StaticResource WorkshopNavigationButton}" />
     </Grid>
-    <Grid x:Name="CompactNavigation" Grid.Column="1" IsVisible="False"
-          Padding="12" RowDefinitions="Auto,Auto" ColumnDefinitions="*,*,*"
-          RowSpacing="10" ColumnSpacing="8" BackgroundColor="{StaticResource WorkshopNavy}">
-      <Label Grid.ColumnSpan="3" Text="BREACHLESS BUNGALOW · WORKSHOP"
+    <VerticalStackLayout x:Name="CompactNavigation" Grid.Column="1" IsVisible="False"
+                         Padding="12" Spacing="10"
+                         BackgroundColor="{StaticResource WorkshopNavy}">
+      <Label Text="BREACHLESS BUNGALOW · WORKSHOP"
              FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
              TextColor="{StaticResource WorkshopGold}" FontSize="16" />
-      <Button x:Name="CompactHomeButton" Grid.Row="1" Text="Home" Clicked="OnHomeClicked"
-              Style="{StaticResource WorkshopNavigationButton}" />
-      <Button x:Name="CompactTasksButton" Grid.Row="1" Grid.Column="1" Text="Tasks"
-              Clicked="OnTasksClicked" Style="{StaticResource WorkshopNavigationButton}" />
-      <Button Grid.Row="1" Grid.Column="2" Text="Sign out" Clicked="OnSignOutClicked"
-              Style="{StaticResource WorkshopNavigationButton}" />
-    </Grid>
+      <!-- Wrapping preserves readable labels as the navigation gains another destination. -->
+      <FlexLayout Direction="Row" Wrap="Wrap">
+        <Button x:Name="CompactHomeButton" Text="Home" Clicked="OnHomeClicked"
+                Margin="0,0,8,8" Style="{StaticResource WorkshopNavigationButton}" />
+        <Button x:Name="CompactTasksButton" Text="Tasks" Clicked="OnTasksClicked"
+                Margin="0,0,8,8" Style="{StaticResource WorkshopNavigationButton}" />
+        <Button x:Name="CompactRenovationsButton" Text="Renovations"
+                Clicked="OnRenovationsClicked" Margin="0,0,8,8"
+                Style="{StaticResource WorkshopNavigationButton}" />
+        <Button Text="Sign out" Clicked="OnSignOutClicked" Margin="0,0,0,8"
+                Style="{StaticResource WorkshopNavigationButton}" />
+      </FlexLayout>
+    </VerticalStackLayout>
     <Grid Grid.Row="1" Grid.Column="1">
       <local:WorkshopHomeView x:Name="HomeView" ViewTasksRequested="OnTasksClicked" />
       <local:TasksView x:Name="TasksView" IsVisible="False" />
+      <local:RenovationsView x:Name="RenovationsView" IsVisible="False" />
     </Grid>
   </Grid>
 </ContentPage>

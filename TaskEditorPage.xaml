@@ -1,47 +1,93 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              x:Class="HomeMaintenanceMAUI.TaskEditorPage"
              Title="Add task" NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource WorkshopBackground}">
+  <ContentPage.Behaviors>
+    <local:WorkshopLightThemeBehavior />
+  </ContentPage.Behaviors>
+  <!-- The existing editor owns all values and actions; this page supplies their presentation. -->
   <ScrollView>
-    <Border Style="{StaticResource WorkshopCard}" Margin="20" Padding="24"
-            MaximumWidthRequest="620" HorizontalOptions="Fill">
-      <VerticalStackLayout Spacing="14">
+    <VerticalStackLayout Padding="20,24" Spacing="18" MaximumWidthRequest="980"
+                         HorizontalOptions="Fill">
+      <VerticalStackLayout Spacing="8">
         <Label x:Name="EditorHeading" Text="ADD TASK"
                Style="{StaticResource WorkshopPageHeading}" />
-        <BoxView Color="{StaticResource WorkshopMuted}" HeightRequest="1"
-                 WidthRequest="140" HorizontalOptions="Start" Margin="0,0,0,8" />
-        <Label Text="Task title" Style="{StaticResource WorkshopLabel}" />
-        <Entry x:Name="TaskTitleEntry" Placeholder="Task title"
-               Style="{StaticResource WorkshopEntry}" SemanticProperties.Description="Task title" />
-        <Label Text="Description / notes (optional)" Style="{StaticResource WorkshopLabel}" />
-        <Editor x:Name="TaskNotesEditor" Placeholder="Description / notes"
-                Style="{StaticResource WorkshopEditor}" HeightRequest="120"
-                SemanticProperties.Description="Description or notes, optional" />
-        <Label Text="Due date" Style="{StaticResource WorkshopLabel}" />
-        <DatePicker x:Name="DueDatePicker" Format="MMM d, yyyy"
-                    TextColor="{StaticResource WorkshopInk}"
-                    BackgroundColor="{StaticResource WorkshopBackground}"
-                    SemanticProperties.Description="Due date" />
-        <Label Text="Task type" Style="{StaticResource WorkshopLabel}" />
-        <Picker x:Name="TaskTypePicker" Title="Choose a task type"
-                Style="{StaticResource WorkshopPicker}">
-        </Picker>
-        <Label Text="Repeat" Style="{StaticResource WorkshopLabel}" />
-        <Picker x:Name="RepeatPicker" Title="Repeat schedule"
-                Style="{StaticResource WorkshopPicker}">
-        </Picker>
-        <FlexLayout Wrap="Wrap" Margin="0,12,0,0">
-          <!-- Save intentionally has no event or command; input is never persisted by this UI. -->
-          <Button Text="Save" Style="{StaticResource WorkshopPrimaryButton}"
-                  IsEnabled="True" Clicked ="OnSaveClicked" Margin="0,0,10,8" />
-          <Button Text="Cancel" Style="{StaticResource WorkshopButton}"
-                  Clicked="OnCancelClicked" Margin="0,0,0,8" />
-        </FlexLayout>
+        <Label Text="Every job starts with a plan." Style="{StaticResource WorkshopSubtitle}" />
+        <local:WorkshopRuler />
       </VerticalStackLayout>
-    </Border>
+
+      <Border Style="{StaticResource WorkshopCard}" Padding="0">
+        <VerticalStackLayout Spacing="0">
+          <Border BackgroundColor="{StaticResource WorkshopNavy}" StrokeThickness="0"
+                  StrokeShape="Rectangle" Padding="20,12">
+            <Label Text="JOB DETAILS" Style="{StaticResource WorkshopPageHeading}"
+                   FontSize="26" TextColor="{StaticResource WorkshopPaper}"
+                   SemanticProperties.HeadingLevel="Level2" />
+          </Border>
+
+          <VerticalStackLayout Padding="20" Spacing="10">
+            <!-- Keep the team's named inputs intact for the existing save and edit code. -->
+            <Label Text="Task title" Style="{StaticResource WorkshopLabel}" />
+            <Border Style="{StaticResource WorkshopCard}" Padding="0">
+              <Entry x:Name="TaskTitleEntry" Placeholder="Task title"
+                     Style="{StaticResource WorkshopEntry}" FontSize="20"
+                     SemanticProperties.Description="Task title" />
+            </Border>
+            <Label Text="Description / notes (optional)" Style="{StaticResource WorkshopLabel}"
+                   Margin="0,6,0,0" />
+            <Border Style="{StaticResource WorkshopCard}" Padding="0">
+              <Editor x:Name="TaskNotesEditor" Placeholder="Description / notes"
+                      Style="{StaticResource WorkshopEditor}" FontSize="18" HeightRequest="120"
+                      SemanticProperties.Description="Description or notes, optional" />
+            </Border>
+
+            <!-- Schedule fields wrap as space narrows, preserving their original defaults. -->
+            <FlexLayout Direction="Row" Wrap="Wrap" AlignItems="Start" Margin="0,10,-16,0">
+              <VerticalStackLayout FlexLayout.Basis="240" FlexLayout.Grow="1"
+                                   Spacing="10" Margin="0,0,16,12">
+                <Label Text="Due date" Style="{StaticResource WorkshopLabel}" />
+                <Border Style="{StaticResource WorkshopCard}" Padding="0">
+                  <DatePicker x:Name="DueDatePicker" Format="MMM d, yyyy" FontSize="20"
+                              FontFamily="{StaticResource WorkshopBodyFont}"
+                              MinimumHeightRequest="44"
+                              TextColor="{StaticResource WorkshopInk}"
+                              BackgroundColor="{StaticResource WorkshopPaper}"
+                              SemanticProperties.Description="Due date" />
+                </Border>
+              </VerticalStackLayout>
+              <VerticalStackLayout FlexLayout.Basis="240" FlexLayout.Grow="1"
+                                   Spacing="10" Margin="0,0,16,12">
+                <Label Text="Task type" Style="{StaticResource WorkshopLabel}" />
+                <Border Style="{StaticResource WorkshopCard}" Padding="0">
+                  <Picker x:Name="TaskTypePicker" Style="{StaticResource WorkshopPicker}"
+                          FontSize="20" SemanticProperties.Description="Task type" />
+                </Border>
+              </VerticalStackLayout>
+              <VerticalStackLayout FlexLayout.Basis="240" FlexLayout.Grow="1"
+                                   Spacing="10" Margin="0,0,16,12">
+                <Label Text="Repeat" Style="{StaticResource WorkshopLabel}" />
+                <Border Style="{StaticResource WorkshopCard}" Padding="0">
+                  <Picker x:Name="RepeatPicker" Style="{StaticResource WorkshopPicker}"
+                          FontSize="20" SemanticProperties.Description="Repeat schedule" />
+                </Border>
+              </VerticalStackLayout>
+            </FlexLayout>
+          </VerticalStackLayout>
+
+          <BoxView Color="{StaticResource WorkshopSteel}" HeightRequest="1" />
+          <FlexLayout Wrap="Wrap" Padding="20,16,20,6">
+            <!-- Preserve both existing handlers and the enabled Save action. -->
+            <Button Text="Save" Style="{StaticResource WorkshopPrimaryButton}"
+                    IsEnabled="True" Clicked="OnSaveClicked" Margin="0,0,10,10" />
+            <Button Text="Cancel" Style="{StaticResource WorkshopButton}"
+                    Clicked="OnCancelClicked" Margin="0,0,0,10" />
+          </FlexLayout>
+        </VerticalStackLayout>
+      </Border>
+    </VerticalStackLayout>
   </ScrollView>
 </ContentPage>

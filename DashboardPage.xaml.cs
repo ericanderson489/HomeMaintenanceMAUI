@@ -9,7 +9,7 @@ namespace HomeMaintenanceMAUI {
     /// </summary>
     public DashboardPage() {
       InitializeComponent();
-      ShowWorkspace(showHome: true);
+      ShowWorkspace(HomeView);
     }
     // 
     protected override async void OnAppearing() {
@@ -39,12 +39,19 @@ namespace HomeMaintenanceMAUI {
 
     /// <summary>Displays Home in response to desktop or compact navigation.</summary>
     private void OnHomeClicked(object? sender, EventArgs e) {
-      ShowWorkspace(showHome: true);
+      ShowWorkspace(HomeView);
     }
 
     /// <summary>Displays the task layout without loading, filtering, or mutating tasks.</summary>
     private void OnTasksClicked(object? sender, EventArgs e) {
-      ShowWorkspace(showHome: false);
+      ShowWorkspace(TasksView);
+    }
+
+    /// <summary>
+    /// Displays the Renovations placeholder without loading or changing project data.
+    /// </summary>
+    private void OnRenovationsClicked(object? sender, EventArgs e) {
+      ShowWorkspace(RenovationsView);
     }
 
     /// <summary>
@@ -59,13 +66,19 @@ namespace HomeMaintenanceMAUI {
     /// <summary>
     /// Updates screen visibility and selected navigation colors for both layouts.
     /// </summary>
-    private void ShowWorkspace(bool showHome) {
+    private void ShowWorkspace(ContentView selectedView) {
+      bool showHome = selectedView == HomeView;
+      bool showTasks = selectedView == TasksView;
+      bool showRenovations = selectedView == RenovationsView;
       HomeView.IsVisible = showHome;
-      TasksView.IsVisible = !showHome;
+      TasksView.IsVisible = showTasks;
+      RenovationsView.IsVisible = showRenovations;
       SetNavigationSelection(HomeButton, showHome);
       SetNavigationSelection(CompactHomeButton, showHome);
-      SetNavigationSelection(TasksButton, !showHome);
-      SetNavigationSelection(CompactTasksButton, !showHome);
+      SetNavigationSelection(TasksButton, showTasks);
+      SetNavigationSelection(CompactTasksButton, showTasks);
+      SetNavigationSelection(RenovationsButton, showRenovations);
+      SetNavigationSelection(CompactRenovationsButton, showRenovations);
     }
 
     /// <summary>
