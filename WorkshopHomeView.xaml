@@ -3,64 +3,92 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              x:Class="HomeMaintenanceMAUI.WorkshopHomeView">
-  <!-- A filling grid keeps the list and its footer aligned with the original desktop layout. -->
-  <Grid Padding="20,16" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
-    <VerticalStackLayout Spacing="8" Margin="0,0,0,10">
-      <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
-        <Label Text="Back in the workshop." Style="{StaticResource WorkshopPageHeading}"
-               Margin="8,0,12,0" />
-        <Button Text="+ Add task" Style="{StaticResource WorkshopPrimaryButton}"
-                Clicked="OnAddTaskClicked" />
-      </FlexLayout>
-      <Label Text="Here’s what needs your attention." Style="{StaticResource WorkshopSubtitle}"
-             Margin="6,2,0,0" />
-      <local:WorkshopRuler />
-    </VerticalStackLayout>
+  <!-- BEFORE: <Grid Padding="20,16" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
+       AFTER: <Grid x:Name="HomeLayout" Padding="20,16" RowDefinitions="Auto,*" RowSpacing="12">
+       The first three former rows now belong to HomeHeaderGrid inside HomeHeaderScroll.
+       The task list remains outside that scroll view so its collection has a finite viewport. -->
+  <Grid x:Name="HomeLayout" Padding="20,16" RowDefinitions="Auto,*" RowSpacing="12">
+    <!-- BEFORE: This grid had no behavior or header scroll view.
+         AFTER: WorkshopWorkspaceLayoutBehavior limits HomeHeaderScroll to available space and
+         arranges SummaryCards in four, two, or one columns without replacing any labels. -->
+    <Grid.Behaviors>
+      <local:WorkshopWorkspaceLayoutBehavior />
+    </Grid.Behaviors>
+    <ScrollView x:Name="HomeHeaderScroll" Orientation="Vertical">
+      <Grid x:Name="HomeHeaderGrid" RowDefinitions="Auto,Auto,Auto" RowSpacing="12">
+        <VerticalStackLayout Spacing="8" Margin="0,0,0,10">
+          <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
+            <Label Text="Back in the workshop." Style="{StaticResource WorkshopPageHeading}"
+                   Margin="8,0,12,0" />
+            <Button Text="+ Add task" Style="{StaticResource WorkshopPrimaryButton}"
+                    Clicked="OnAddTaskClicked" />
+          </FlexLayout>
+          <Label Text="Here’s what needs your attention." Style="{StaticResource WorkshopSubtitle}"
+                 Margin="6,2,0,0" />
+          <local:WorkshopRuler />
+        </VerticalStackLayout>
 
-    <!-- BEFORE: Each label had only literal Text="0  ..." and stayed at zero.
-         AFTER: The labels below have names so SetTaskSummary can display the loaded totals.
-         The zero text remains the initial empty state until the dashboard supplies tasks. -->
-    <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{StaticResource WorkshopPaper}">
-      <Border Style="{StaticResource WorkshopCard}" Padding="14,16">
-        <!-- BEFORE: <Label Text="0  On the bench"; AFTER: add x:Name="OnBenchSummaryLabel". -->
-        <Label x:Name="OnBenchSummaryLabel" Text="0  On the bench"
-               Style="{StaticResource WorkshopLabel}" FontSize="23"
-               FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
-      </Border>
-      <Border Grid.Column="1" Style="{StaticResource WorkshopCard}" Padding="14,16">
-        <!-- BEFORE: <Label Text="0  Due soon"; AFTER: add x:Name="DueSoonSummaryLabel". -->
-        <Label x:Name="DueSoonSummaryLabel" Text="0  Due soon"
-               Style="{StaticResource WorkshopLabel}" FontSize="23"
-               FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
-      </Border>
-      <Border Grid.Column="2" Style="{StaticResource WorkshopCard}" Padding="14,16">
-        <!-- BEFORE: <Label Text="0  Overdue"; AFTER: add x:Name="OverdueSummaryLabel". -->
-        <Label x:Name="OverdueSummaryLabel" Text="0  Overdue"
-               Style="{StaticResource WorkshopLabel}" FontSize="23"
-               FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
-               TextColor="{StaticResource WorkshopRed}" />
-      </Border>
-      <Border Grid.Column="3" Style="{StaticResource WorkshopCard}" Padding="14,16">
-        <!-- BEFORE: <Label Text="0  Finished"; AFTER: add x:Name="FinishedSummaryLabel".
-             The displayed total includes completed tasks that have not been archived. -->
-        <Label x:Name="FinishedSummaryLabel" Text="0  Finished"
-               ToolTipProperties.Text="Completed tasks waiting for archive"
-               Style="{StaticResource WorkshopLabel}" FontSize="23"
-               FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
-      </Border>
-    </Grid>
+        <!-- BEFORE: Each label had only literal Text="0  ..." and stayed at zero.
+             AFTER: The labels below have names so SetTaskSummary can display the loaded totals.
+             The zero text remains the initial empty state until the dashboard supplies tasks. -->
+        <!-- BEFORE: <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{StaticResource WorkshopPaper}">
+             AFTER: <Grid x:Name="SummaryCards" Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{StaticResource WorkshopPaper}">
+             The added name lets the layout behavior reposition these same four existing cards. -->
+        <Grid x:Name="SummaryCards" Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{StaticResource WorkshopPaper}">
+          <Border Style="{StaticResource WorkshopCard}" Padding="14,16">
+            <!-- BEFORE: <Label Text="0  On the bench"; AFTER: add x:Name="OnBenchSummaryLabel". -->
+            <Label x:Name="OnBenchSummaryLabel" Text="0  On the bench"
+                   Style="{StaticResource WorkshopLabel}" FontSize="23"
+                   FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
+          </Border>
+          <Border Grid.Column="1" Style="{StaticResource WorkshopCard}" Padding="14,16">
+            <!-- BEFORE: <Label Text="0  Due soon"; AFTER: add x:Name="DueSoonSummaryLabel". -->
+            <Label x:Name="DueSoonSummaryLabel" Text="0  Due soon"
+                   Style="{StaticResource WorkshopLabel}" FontSize="23"
+                   FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
+          </Border>
+          <Border Grid.Column="2" Style="{StaticResource WorkshopCard}" Padding="14,16">
+            <!-- BEFORE: <Label Text="0  Overdue"; AFTER: add x:Name="OverdueSummaryLabel". -->
+            <Label x:Name="OverdueSummaryLabel" Text="0  Overdue"
+                   Style="{StaticResource WorkshopLabel}" FontSize="23"
+                   FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
+                   TextColor="{StaticResource WorkshopRed}" />
+          </Border>
+          <Border Grid.Column="3" Style="{StaticResource WorkshopCard}" Padding="14,16">
+            <!-- BEFORE: <Label Text="0  Finished"; AFTER: add x:Name="FinishedSummaryLabel".
+                 The displayed total includes completed tasks that have not been archived. -->
+            <Label x:Name="FinishedSummaryLabel" Text="0  Finished"
+                   ToolTipProperties.Text="Completed tasks waiting for archive"
+                   Style="{StaticResource WorkshopLabel}" FontSize="23"
+                   FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold" />
+          </Border>
+        </Grid>
 
-    <FlexLayout Grid.Row="2" Direction="Row" Wrap="Wrap" AlignItems="Center"
-                Padding="16,7" BackgroundColor="{StaticResource WorkshopNavy}">
-      <Label Text="UPCOMING JOBS" Style="{StaticResource WorkshopLabel}"
-             TextColor="{StaticResource WorkshopPaper}" FontSize="27" FontAttributes="Bold"
-             FontFamily="{StaticResource WorkshopHeadingFont}" Margin="0,0,28,0" />
-      <Button Text="View all tasks" Style="{StaticResource WorkshopButton}"
-              Clicked="OnViewTasksClicked" />
-    </FlexLayout>
-    <local:TaskListView x:Name="UpcomingJobs" 
-                        Grid.Row="3" 
-                        EmptyMessage="No tasks yet. Add your first job." 
+        <FlexLayout Grid.Row="2" Direction="Row" Wrap="Wrap" AlignItems="Center"
+                    Padding="16,7" BackgroundColor="{StaticResource WorkshopNavy}">
+          <Label Text="UPCOMING JOBS" Style="{StaticResource WorkshopLabel}"
+                 TextColor="{StaticResource WorkshopPaper}" FontSize="27" FontAttributes="Bold"
+                 FontFamily="{StaticResource WorkshopHeadingFont}" Margin="0,0,28,0" />
+          <Button Text="View all tasks" Style="{StaticResource WorkshopButton}"
+                  Clicked="OnViewTasksClicked" />
+        </FlexLayout>
+      </Grid>
+    </ScrollView>
+    <!-- BEFORE:
+         <local:TaskListView x:Name="UpcomingJobs"
+                             Grid.Row="3"
+                             EmptyMessage="No tasks yet. Add your first job."
+                             />
+         AFTER:
+         <local:TaskListView x:Name="UpcomingJobs"
+                             Grid.Row="1"
+                             EmptyMessage="No upcoming jobs."
+                             />
+         Only its layout row and our empty-state wording change. The existing name, task
+         source, selection behavior, and due-date filtering remain owned by the same code. -->
+    <local:TaskListView x:Name="UpcomingJobs"
+                        Grid.Row="1"
+                        EmptyMessage="No upcoming jobs."
                         />
   </Grid>
 </ContentView>

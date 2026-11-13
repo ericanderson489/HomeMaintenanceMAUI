@@ -136,6 +136,17 @@ internal sealed class AccountStore
         FileAccess.Write, FileShare.None);
     AccountRecord account = ReadAccount(path);
     List<TaskRecord> tasks = account.Tasks.ToList();
+    // BEFORE:
+    // int index = tasks.FindIndex(task => task.Id == original.Id);
+    // AFTER: Reject null stored entries before either ID lookup, using the existing
+    // InvalidDataException save-error handler without changing the account file:
+    // if (tasks.Any(task => task is null)) {
+    //   throw new InvalidDataException("The account contains a null task.");
+    // }
+    // int index = tasks.FindIndex(task => task.Id == original.Id);
+    if (tasks.Any(task => task is null)) {
+      throw new InvalidDataException("The account contains a null task.");
+    }
     int index = tasks.FindIndex(task => task.Id == original.Id);
     if (index < 0 || tasks[index] != original) {
       throw new InvalidOperationException(
@@ -156,6 +167,22 @@ internal sealed class AccountStore
       Repeat = edited.Repeat
     };
     tasks[index] = saved;
+    // BEFORE:
+    // AccountRecord updated = account with {
+    //   Revision = account.Revision + 1,
+    //   Tasks = tasks
+    // };
+    // AFTER: Stop this edit before writing a revision that would wrap below zero:
+    // if (account.Revision == int.MaxValue) {
+    //   throw new InvalidDataException("The account revision cannot be increased.");
+    // }
+    // AccountRecord updated = account with {
+    //   Revision = account.Revision + 1,
+    //   Tasks = tasks
+    // };
+    if (account.Revision == int.MaxValue) {
+      throw new InvalidDataException("The account revision cannot be increased.");
+    }
     AccountRecord updated = account with {
       Revision = account.Revision + 1,
       Tasks = tasks

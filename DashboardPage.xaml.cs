@@ -74,8 +74,20 @@ namespace HomeMaintenanceMAUI {
     /// Sets CurrentAccount to null so that it does not live on in memory as a static variable.
     /// </summary>
     private async void OnSignOutClicked(object sender, EventArgs e) {
+      // BEFORE (the complete executable body):
+      // UserSession.CurrentAccount = null;
+      // await Shell.Current.GoToAsync("//MainPage");
+      // AFTER: Keep the team's session reset and the same route. Clear our cached login
+      // controls before navigation, and clear the destination too if Shell owns the root
+      // outside NavigationStack. Authentication and account-storage code are unchanged.
       UserSession.CurrentAccount = null;
+      foreach (MainPage loginPage in Navigation.NavigationStack.OfType<MainPage>()) {
+        loginPage.ClearWorkshopCredentials();
+      }
       await Shell.Current.GoToAsync("//MainPage");
+      if (Shell.Current.CurrentPage is MainPage displayedLogin) {
+        displayedLogin.ClearWorkshopCredentials();
+      }
     }
 
     /// <summary>

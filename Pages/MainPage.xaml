@@ -105,7 +105,21 @@
                     Style="{StaticResource WorkshopButton}"
                     Margin="0,0,10,10"
                     Clicked="OnCreateAccountClicked" />
+            <!-- BEFORE: our Cancel button was exactly:
             <Button Text="Cancel"
+                    Style="{StaticResource WorkshopButton}"
+                    Margin="0,0,0,10"
+                    Clicked="OnCancelClicked" />
+            AFTER: the button is exactly the block below. Only IsVisible was added;
+            iOS cannot quit programmatically, so it no longer offers this inactive action.
+            <Button Text="Cancel"
+                    IsVisible="{OnPlatform Default=True, iOS=False}"
+                    Style="{StaticResource WorkshopButton}"
+                    Margin="0,0,0,10"
+                    Clicked="OnCancelClicked" />
+            -->
+            <Button Text="Cancel"
+                    IsVisible="{OnPlatform Default=True, iOS=False}"
                     Style="{StaticResource WorkshopButton}"
                     Margin="0,0,0,10"
                     Clicked="OnCancelClicked" />

@@ -6,17 +6,43 @@
              Title="Workshop" Shell.NavBarIsVisible="False"
              BackgroundColor="{StaticResource WorkshopBackground}">
   <Grid x:Name="WorkspaceGrid" ColumnDefinitions="205,*" RowDefinitions="Auto,*">
+    <!-- BEFORE: WorkspaceGrid had no Grid.Behaviors collection.
+         AFTER: <Grid.Behaviors><local:WorkshopDashboardLayoutBehavior /></Grid.Behaviors>
+         The new presentation-only behavior selects the states from measured content width. -->
+    <Grid.Behaviors>
+      <local:WorkshopDashboardLayoutBehavior />
+    </Grid.Behaviors>
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup x:Name="WindowWidth">
+        <!-- BEFORE:
+             <VisualState x:Name="Wide">
+               <VisualState.StateTriggers>
+                 <AdaptiveTrigger MinWindowWidth="800" />
+               </VisualState.StateTriggers>
+             </VisualState>
+             AFTER:
+             <VisualState x:Name="Wide">
+               <VisualState.Setters>
+                 <Setter Property="ColumnDefinitions" Value="205,*" />
+                 <Setter TargetName="Sidebar" Property="IsVisible" Value="True" />
+                 <Setter TargetName="CompactNavigation" Property="IsVisible" Value="False" />
+               </VisualState.Setters>
+             </VisualState>
+             Explicit setters restore the desktop layout after widening the window. -->
         <VisualState x:Name="Wide">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="800" />
-          </VisualState.StateTriggers>
+          <VisualState.Setters>
+            <Setter Property="ColumnDefinitions" Value="205,*" />
+            <Setter TargetName="Sidebar" Property="IsVisible" Value="True" />
+            <Setter TargetName="CompactNavigation" Property="IsVisible" Value="False" />
+          </VisualState.Setters>
         </VisualState>
+        <!-- BEFORE: Narrow contained this trigger block:
+             <VisualState.StateTriggers>
+               <AdaptiveTrigger MinWindowWidth="0" />
+             </VisualState.StateTriggers>
+             AFTER: That block is removed; WorkshopDashboardLayoutBehavior selects Narrow.
+             The existing Narrow setters below are unchanged. -->
         <VisualState x:Name="Narrow">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="0" />
-          </VisualState.StateTriggers>
           <VisualState.Setters>
             <Setter Property="ColumnDefinitions" Value="0,*" />
             <Setter TargetName="Sidebar" Property="IsVisible" Value="False" />
@@ -49,18 +75,44 @@
       <Label Text="BREACHLESS BUNGALOW · WORKSHOP"
              FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
              TextColor="{StaticResource WorkshopGold}" FontSize="16" />
-      <!-- Wrapping preserves readable labels as the navigation gains another destination. -->
-      <FlexLayout Direction="Row" Wrap="Wrap">
+      <!-- BEFORE:
+           <FlexLayout Direction="Row" Wrap="Wrap">
+             <Button x:Name="CompactHomeButton" Text="Home" Clicked="OnHomeClicked"
+                     Margin="0,0,8,8" Style="{StaticResource WorkshopNavigationButton}" />
+             <Button x:Name="CompactTasksButton" Text="Tasks" Clicked="OnTasksClicked"
+                     Margin="0,0,8,8" Style="{StaticResource WorkshopNavigationButton}" />
+             <Button x:Name="CompactRenovationsButton" Text="Renovations"
+                     Clicked="OnRenovationsClicked" Margin="0,0,8,8"
+                     Style="{StaticResource WorkshopNavigationButton}" />
+             <Button Text="Sign out" Clicked="OnSignOutClicked" Margin="0,0,0,8"
+                     Style="{StaticResource WorkshopNavigationButton}" />
+           </FlexLayout>
+           AFTER:
+           <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+             <Button x:Name="CompactHomeButton" Text="Home" Clicked="OnHomeClicked"
+                     Padding="12,10" Style="{StaticResource WorkshopNavigationButton}" />
+             <Button x:Name="CompactTasksButton" Text="Tasks" Clicked="OnTasksClicked"
+                     Grid.Column="1" Padding="12,10" Style="{StaticResource WorkshopNavigationButton}" />
+             <Button x:Name="CompactRenovationsButton" Text="Renovations"
+                     Clicked="OnRenovationsClicked" Grid.Row="1" Padding="12,10"
+                     Style="{StaticResource WorkshopNavigationButton}" />
+             <Button Text="Sign out" Clicked="OnSignOutClicked" Grid.Row="1" Grid.Column="1"
+                     Padding="12,10"
+                     Style="{StaticResource WorkshopNavigationButton}" />
+           </Grid>
+           The same four buttons fit in two rows without consuming a third navigation row. -->
+      <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
         <Button x:Name="CompactHomeButton" Text="Home" Clicked="OnHomeClicked"
-                Margin="0,0,8,8" Style="{StaticResource WorkshopNavigationButton}" />
+                Padding="12,10" Style="{StaticResource WorkshopNavigationButton}" />
         <Button x:Name="CompactTasksButton" Text="Tasks" Clicked="OnTasksClicked"
-                Margin="0,0,8,8" Style="{StaticResource WorkshopNavigationButton}" />
+                Grid.Column="1" Padding="12,10" Style="{StaticResource WorkshopNavigationButton}" />
         <Button x:Name="CompactRenovationsButton" Text="Renovations"
-                Clicked="OnRenovationsClicked" Margin="0,0,8,8"
+                Clicked="OnRenovationsClicked" Grid.Row="1" Padding="12,10"
                 Style="{StaticResource WorkshopNavigationButton}" />
-        <Button Text="Sign out" Clicked="OnSignOutClicked" Margin="0,0,0,8"
+        <Button Text="Sign out" Clicked="OnSignOutClicked" Grid.Row="1" Grid.Column="1"
+                Padding="12,10"
                 Style="{StaticResource WorkshopNavigationButton}" />
-      </FlexLayout>
+      </Grid>
     </VerticalStackLayout>
     <Grid Grid.Row="1" Grid.Column="1">
       <local:WorkshopHomeView x:Name="HomeView" ViewTasksRequested="OnTasksClicked" />
