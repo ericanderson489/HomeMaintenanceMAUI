@@ -9,9 +9,9 @@ namespace HomeMaintenanceMAUI {
     /// </summary>
     public DashboardPage() {
       InitializeComponent();
-      ShowWorkspace(showHome: true);
+      ShowWorkspace(HomeView);
     }
-    // 
+    /// <summary>Reloads the task lists and display totals when the dashboard becomes visible.</summary>
     protected override async void OnAppearing() {
       // Reloads the data when the dashboard comes back into view
       base.OnAppearing();
@@ -21,15 +21,30 @@ namespace HomeMaintenanceMAUI {
         return;
 
       try {
-        // Reload the account's tasks on sign-in and when returning from Add task.
-        var activeTasks = new AccountStore()
-            .LoadTasks(account.GetAccountUserName())
+        // BEFORE:
+        // var activeTasks = new AccountStore()
+        //     .LoadTasks(account.GetAccountUserName())
+        //     .Where(task => !task.IsArchived && task.Status == Status.Pending)
+        //     .OrderBy(task => task.DueDate)
+        //     .ToList();
+        // AFTER: Retain the result of the same single read for the summary, then apply
+        // the unchanged pending/unarchived filter and ordering to both existing lists:
+        // var tasks = new AccountStore().LoadTasks(account.GetAccountUserName());
+        // var activeTasks = tasks
+        //     .Where(task => !task.IsArchived && task.Status == Status.Pending)
+        //     .OrderBy(task => task.DueDate)
+        //     .ToList();
+        var tasks = new AccountStore().LoadTasks(account.GetAccountUserName());
+        var activeTasks = tasks
             .Where(task => !task.IsArchived && task.Status == Status.Pending)
             .OrderBy(task => task.DueDate)
             .ToList();
 
         TasksView.SetTasks(activeTasks);
         HomeView.SetTasks(activeTasks);
+        // NEW: No summary was supplied before. Include completed records for Finished;
+        // the two list inputs above keep their existing pending/unarchived behavior.
+        HomeView.SetTaskSummary(tasks);
       } catch (Exception ex) when (
             ex is IOException or UnauthorizedAccessException or InvalidDataException) {
         System.Diagnostics.Debug.WriteLine($"Unable to load dashboard tasks: {ex}");
@@ -39,12 +54,19 @@ namespace HomeMaintenanceMAUI {
 
     /// <summary>Displays Home in response to desktop or compact navigation.</summary>
     private void OnHomeClicked(object? sender, EventArgs e) {
-      ShowWorkspace(showHome: true);
+      ShowWorkspace(HomeView);
     }
 
     /// <summary>Displays the task layout without loading, filtering, or mutating tasks.</summary>
     private void OnTasksClicked(object? sender, EventArgs e) {
-      ShowWorkspace(showHome: false);
+      ShowWorkspace(TasksView);
+    }
+
+    /// <summary>
+    /// Displays the Renovations placeholder without loading or changing project data.
+    /// </summary>
+    private void OnRenovationsClicked(object? sender, EventArgs e) {
+      ShowWorkspace(RenovationsView);
     }
 
     /// <summary>
@@ -52,20 +74,38 @@ namespace HomeMaintenanceMAUI {
     /// Sets CurrentAccount to null so that it does not live on in memory as a static variable.
     /// </summary>
     private async void OnSignOutClicked(object sender, EventArgs e) {
+      // BEFORE (the complete executable body):
+      // UserSession.CurrentAccount = null;
+      // await Shell.Current.GoToAsync("//MainPage");
+      // AFTER: Keep the team's session reset and the same route. Clear our cached login
+      // controls before navigation, and clear the destination too if Shell owns the root
+      // outside NavigationStack. Authentication and account-storage code are unchanged.
       UserSession.CurrentAccount = null;
+      foreach (MainPage loginPage in Navigation.NavigationStack.OfType<MainPage>()) {
+        loginPage.ClearWorkshopCredentials();
+      }
       await Shell.Current.GoToAsync("//MainPage");
+      if (Shell.Current.CurrentPage is MainPage displayedLogin) {
+        displayedLogin.ClearWorkshopCredentials();
+      }
     }
 
     /// <summary>
     /// Updates screen visibility and selected navigation colors for both layouts.
     /// </summary>
-    private void ShowWorkspace(bool showHome) {
+    private void ShowWorkspace(ContentView selectedView) {
+      bool showHome = selectedView == HomeView;
+      bool showTasks = selectedView == TasksView;
+      bool showRenovations = selectedView == RenovationsView;
       HomeView.IsVisible = showHome;
-      TasksView.IsVisible = !showHome;
+      TasksView.IsVisible = showTasks;
+      RenovationsView.IsVisible = showRenovations;
       SetNavigationSelection(HomeButton, showHome);
       SetNavigationSelection(CompactHomeButton, showHome);
-      SetNavigationSelection(TasksButton, !showHome);
-      SetNavigationSelection(CompactTasksButton, !showHome);
+      SetNavigationSelection(TasksButton, showTasks);
+      SetNavigationSelection(CompactTasksButton, showTasks);
+      SetNavigationSelection(RenovationsButton, showRenovations);
+      SetNavigationSelection(CompactRenovationsButton, showRenovations);
     }
 
     /// <summary>

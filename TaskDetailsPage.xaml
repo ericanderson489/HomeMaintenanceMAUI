@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:HomeMaintenanceMAUI"
+             x:Class="HomeMaintenanceMAUI.TaskDetailsPage"
+             Title="Task details" Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource WorkshopBackground}">
+  <ContentPage.Behaviors>
+    <local:WorkshopLightThemeBehavior />
+  </ContentPage.Behaviors>
+  <!-- Details stay read-only; the Edit task action opens the approved existing-task editor. -->
+  <Grid x:Name="DetailsLayout" Padding="24" RowDefinitions="Auto,*,Auto" RowSpacing="18">
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="DetailsLayoutStates">
+        <VisualState x:Name="Wide">
+          <VisualState.Setters>
+            <Setter Property="Padding" Value="24" />
+            <Setter TargetName="DetailsGrid" Property="ColumnDefinitions" Value="*,340" />
+            <Setter TargetName="DetailsGrid" Property="RowDefinitions" Value="*" />
+            <Setter TargetName="InformationCard" Property="Grid.Column" Value="1" />
+            <Setter TargetName="InformationCard" Property="Grid.Row" Value="0" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="Compact">
+          <VisualState.Setters>
+            <Setter Property="Padding" Value="16" />
+            <Setter TargetName="DetailsGrid" Property="ColumnDefinitions" Value="*" />
+            <Setter TargetName="DetailsGrid" Property="RowDefinitions" Value="Auto,Auto" />
+            <Setter TargetName="InformationCard" Property="Grid.Column" Value="0" />
+            <Setter TargetName="InformationCard" Property="Grid.Row" Value="1" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <VerticalStackLayout Spacing="8">
+      <Label Text="Task details" Style="{StaticResource WorkshopPageHeading}" />
+      <Label Text="Everything you need for this job."
+             Style="{StaticResource WorkshopSubtitle}" />
+      <local:WorkshopRuler />
+    </VerticalStackLayout>
+
+    <!-- The shared layout behavior fills desktop space and stacks the same panels when narrow. -->
+    <ScrollView x:Name="DetailsScroll" Grid.Row="1">
+      <ScrollView.Behaviors>
+        <local:WorkshopTaskLayoutBehavior />
+      </ScrollView.Behaviors>
+      <Grid x:Name="DetailsGrid" ColumnDefinitions="*,340" RowDefinitions="*"
+            ColumnSpacing="18" RowSpacing="18">
+        <Border Style="{StaticResource WorkshopCard}" Padding="0" MinimumHeightRequest="260">
+          <Grid RowDefinitions="Auto,*">
+            <Border BackgroundColor="{StaticResource WorkshopNavy}" StrokeThickness="0"
+                    StrokeShape="Rectangle" Padding="20,12">
+              <Label Text="JOB SHEET" Style="{StaticResource WorkshopPageHeading}"
+                     FontSize="26" TextColor="{StaticResource WorkshopPaper}"
+                     SemanticProperties.HeadingLevel="Level2" />
+            </Border>
+            <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="16">
+              <Label x:Name="TaskNameLabel" Style="{StaticResource WorkshopPageHeading}"
+                     FontSize="30" LineBreakMode="WordWrap"
+                     SemanticProperties.HeadingLevel="Level2" />
+              <BoxView Color="{StaticResource WorkshopSteel}" HeightRequest="1" />
+              <Label Text="Description / notes" Style="{StaticResource WorkshopLabel}"
+                     FontAttributes="Bold" />
+              <Label x:Name="DescriptionLabel" Style="{StaticResource WorkshopLabel}"
+                     LineBreakMode="WordWrap" />
+            </VerticalStackLayout>
+          </Grid>
+        </Border>
+
+        <Border x:Name="InformationCard" Grid.Column="1" VerticalOptions="Start"
+                Style="{StaticResource WorkshopCard}" Padding="0">
+          <VerticalStackLayout Spacing="0">
+            <Border BackgroundColor="{StaticResource WorkshopNavy}" StrokeThickness="0"
+                    StrokeShape="Rectangle" Padding="20,12">
+              <Label Text="TASK INFORMATION" Style="{StaticResource WorkshopPageHeading}"
+                     FontSize="26" TextColor="{StaticResource WorkshopPaper}"
+                     SemanticProperties.HeadingLevel="Level2" />
+            </Border>
+            <!-- These labels show the supplied values without loading or updating a task. -->
+            <VerticalStackLayout Padding="20" Spacing="8">
+              <Label Text="Due date" Style="{StaticResource WorkshopSubtitle}" />
+              <Label x:Name="DueDateLabel" Style="{StaticResource WorkshopLabel}" />
+              <Label Text="Status" Style="{StaticResource WorkshopSubtitle}" Margin="0,12,0,0" />
+              <Label x:Name="StatusLabel" Style="{StaticResource WorkshopLabel}" />
+              <Label Text="Task type" Style="{StaticResource WorkshopSubtitle}"
+                     Margin="0,12,0,0" />
+              <Label x:Name="TaskTypeLabel" Style="{StaticResource WorkshopLabel}"
+                     LineBreakMode="WordWrap" />
+              <Label Text="Repeat" Style="{StaticResource WorkshopSubtitle}" Margin="0,12,0,0" />
+              <Label x:Name="RepeatLabel" Style="{StaticResource WorkshopLabel}"
+                     LineBreakMode="WordWrap" />
+            </VerticalStackLayout>
+          </VerticalStackLayout>
+        </Border>
+      </Grid>
+    </ScrollView>
+
+    <!-- BEFORE: Text="Task editing is coming soon."; EditTaskButton had IsEnabled="False"
+         and ToolTipProperties.Text="Task editing is coming soon." with no Clicked handler.
+         AFTER: Text="Edit this job's details and schedule."; the enabled button uses
+         Clicked="OnEditTaskClicked" and ToolTipProperties.Text="Edit this existing task". -->
+    <Border Grid.Row="2" Style="{StaticResource WorkshopCard}" Padding="16,12,16,2">
+      <FlexLayout Direction="Row" Wrap="Wrap" AlignItems="Center" JustifyContent="SpaceBetween">
+        <Label Text="Edit this job's details and schedule." Style="{StaticResource WorkshopSubtitle}"
+               FontSize="16" Margin="0,0,16,10" />
+        <HorizontalStackLayout Spacing="10" Margin="0,0,0,10">
+          <Button x:Name="EditTaskButton" Text="Edit task" Clicked="OnEditTaskClicked"
+                  Style="{StaticResource WorkshopPrimaryButton}"
+                  ToolTipProperties.Text="Edit this existing task" />
+          <Button x:Name="CloseButton" Text="Close" Clicked="OnCloseClicked"
+                  Style="{StaticResource WorkshopButton}" />
+        </HorizontalStackLayout>
+      </FlexLayout>
+    </Border>
+  </Grid>
+</ContentPage>
