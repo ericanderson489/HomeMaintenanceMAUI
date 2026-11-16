@@ -15,7 +15,7 @@ namespace HomeMaintenanceMAUI.WinUI {
     /// executed, and as such is the logical equivalent of main() or WinMain().
     /// </summary>
     public App() {
-      bool startup = false;
+      bool startup = true;
       this.InitializeComponent();
       if (startup) {
         RegisterForWindowsStartup();
