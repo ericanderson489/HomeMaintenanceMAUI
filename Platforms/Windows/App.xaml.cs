@@ -15,31 +15,31 @@ namespace HomeMaintenanceMAUI.WinUI {
     /// executed, and as such is the logical equivalent of main() or WinMain().
     /// </summary>
     public App() {
+      bool startup = false;
       this.InitializeComponent();
-      RegisterForWindowsStartup();
+      if (startup) {
+        RegisterForWindowsStartup();
+      }
     }
 
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 
     private static void RegisterForWindowsStartup() {
-      bool startup = false;
-      if (startup) {
-        try {
-          string? executablePath = Process.GetCurrentProcess().MainModule?.FileName;
+      try {
+        string? executablePath = Process.GetCurrentProcess().MainModule?.FileName;
 
-          if (string.IsNullOrWhiteSpace(executablePath)) {
-            return;
-          }
-
-          using RegistryKey? startupKey = Registry.CurrentUser.CreateSubKey(
-              @"Software\Microsoft\Windows\CurrentVersion\Run");
-
-          startupKey?.SetValue("HomeMaintenanceMAUI", $"\"{executablePath}\"");
-        } catch (Exception) {
-          // Startup registration should not prevent the app from opening.
+        if (string.IsNullOrWhiteSpace(executablePath)) {
+          return;
         }
+
+        using RegistryKey? startupKey = Registry.CurrentUser.CreateSubKey(
+            @"Software\Microsoft\Windows\CurrentVersion\Run");
+
+        startupKey?.SetValue("HomeMaintenanceMAUI", $"\"{executablePath}\"");
+      } catch (Exception) {
+        // Startup registration should not prevent the app from opening.
       }
     }
   }
-
 }
+
