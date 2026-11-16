@@ -19,6 +19,8 @@ namespace HomeMaintenanceMAUI.WinUI {
       this.InitializeComponent();
       if (startup) {
         RegisterForWindowsStartup();
+      } else {
+        UnregisterFromWindowsStartup();
       }
     }
 
@@ -36,6 +38,17 @@ namespace HomeMaintenanceMAUI.WinUI {
             @"Software\Microsoft\Windows\CurrentVersion\Run");
 
         startupKey?.SetValue("HomeMaintenanceMAUI", $"\"{executablePath}\"");
+      } catch (Exception) {
+        // Startup registration should not prevent the app from opening.
+      }
+    }
+
+    private static void UnregisterFromWindowsStartup() {
+      try {
+        using RegistryKey? startupKey = Registry.CurrentUser.OpenSubKey(
+            @"Software\Microsoft\Windows\CurrentVersion\Run", writable: true);
+
+        startupKey?.DeleteValue("HomeMaintenanceMAUI", throwOnMissingValue: false);
       } catch (Exception) {
         // Startup registration should not prevent the app from opening.
       }
