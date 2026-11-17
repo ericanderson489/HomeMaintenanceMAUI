@@ -3,6 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              x:Class="HomeMaintenanceMAUI.WorkshopHomeView">
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: BackgroundColor="{StaticResource WorkshopPaper}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopSurface}"
+       BEFORE: TextColor="{StaticResource WorkshopRed}"
+       AFTER:  TextColor="{DynamicResource WorkshopDanger}"
+       BEFORE: TextColor="{StaticResource WorkshopPaper}"
+       AFTER:  TextColor="{DynamicResource WorkshopOnNavy}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
   <!-- BEFORE: <Grid Padding="20,16" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
        AFTER: <Grid x:Name="HomeLayout" Padding="20,16" RowDefinitions="Auto,*" RowSpacing="12">
        The first three former rows now belong to HomeHeaderGrid inside HomeHeaderScroll.
@@ -15,7 +23,9 @@
       <local:WorkshopWorkspaceLayoutBehavior />
     </Grid.Behaviors>
     <ScrollView x:Name="HomeHeaderScroll" Orientation="Vertical">
-      <Grid x:Name="HomeHeaderGrid" RowDefinitions="Auto,Auto,Auto" RowSpacing="12">
+      <!-- BEFORE: <Grid x:Name="HomeHeaderGrid" RowDefinitions="Auto,Auto,Auto" RowSpacing="12">
+           AFTER: The same grid adds one Auto row for a presentation-only sort control. -->
+      <Grid x:Name="HomeHeaderGrid" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="12">
         <VerticalStackLayout Spacing="8" Margin="0,0,0,10">
           <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
             <Label Text="Back in the workshop." Style="{StaticResource WorkshopPageHeading}"
@@ -34,7 +44,7 @@
         <!-- BEFORE: <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{StaticResource WorkshopPaper}">
              AFTER: <Grid x:Name="SummaryCards" Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{StaticResource WorkshopPaper}">
              The added name lets the layout behavior reposition these same four existing cards. -->
-        <Grid x:Name="SummaryCards" Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{StaticResource WorkshopPaper}">
+        <Grid x:Name="SummaryCards" Grid.Row="1" ColumnDefinitions="*,*,*,*" BackgroundColor="{DynamicResource WorkshopSurface}">
           <Border Style="{StaticResource WorkshopCard}" Padding="14,16">
             <!-- BEFORE: <Label Text="0  On the bench"; AFTER: add x:Name="OnBenchSummaryLabel". -->
             <Label x:Name="OnBenchSummaryLabel" Text="0  On the bench"
@@ -52,7 +62,7 @@
             <Label x:Name="OverdueSummaryLabel" Text="0  Overdue"
                    Style="{StaticResource WorkshopLabel}" FontSize="23"
                    FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
-                   TextColor="{StaticResource WorkshopRed}" />
+                   TextColor="{DynamicResource WorkshopDanger}" />
           </Border>
           <Border Grid.Column="3" Style="{StaticResource WorkshopCard}" Padding="14,16">
             <!-- BEFORE: <Label Text="0  Finished"; AFTER: add x:Name="FinishedSummaryLabel".
@@ -67,11 +77,16 @@
         <FlexLayout Grid.Row="2" Direction="Row" Wrap="Wrap" AlignItems="Center"
                     Padding="16,7" BackgroundColor="{StaticResource WorkshopNavy}">
           <Label Text="UPCOMING JOBS" Style="{StaticResource WorkshopLabel}"
-                 TextColor="{StaticResource WorkshopPaper}" FontSize="27" FontAttributes="Bold"
+                 TextColor="{DynamicResource WorkshopOnNavy}" FontSize="27" FontAttributes="Bold"
                  FontFamily="{StaticResource WorkshopHeadingFont}" Margin="0,0,28,0" />
           <Button Text="View all tasks" Style="{StaticResource WorkshopButton}"
                   Clicked="OnViewTasksClicked" />
         </FlexLayout>
+        <!-- BEFORE: There was no sorting control after the UPCOMING JOBS heading.
+             AFTER: The new header control below sorts this existing UpcomingJobs table only;
+             the team's task source and upcoming-date filter are unchanged. -->
+        <local:WorkshopTaskSortView x:Name="HomeSortControl" Grid.Row="3"
+                                    TargetList="{x:Reference UpcomingJobs}" />
       </Grid>
     </ScrollView>
     <!-- BEFORE:

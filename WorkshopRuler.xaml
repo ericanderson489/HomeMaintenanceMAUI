@@ -4,7 +4,11 @@
              x:Class="HomeMaintenanceMAUI.WorkshopRuler"
              WidthRequest="140" HeightRequest="12" HorizontalOptions="Start"
              InputTransparent="True" AutomationProperties.IsInAccessibleTree="False">
-  <Path Stroke="{StaticResource WorkshopMuted}" StrokeThickness="1"
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: Stroke="{StaticResource WorkshopMuted}"
+       AFTER:  Stroke="{DynamicResource WorkshopSecondaryText}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
+  <Path Stroke="{DynamicResource WorkshopSecondaryText}" StrokeThickness="1"
         Data="M0,1 L140,1 M0,1 L0,12 M8,1 L8,6 M16,1 L16,6 M24,1 L24,6
               M32,1 L32,12 M40,1 L40,6 M48,1 L48,6 M56,1 L56,6 M64,1 L64,12
               M72,1 L72,6 M80,1 L80,6 M88,1 L88,6 M96,1 L96,12 M104,1 L104,6

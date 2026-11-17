@@ -6,9 +6,12 @@ using Microsoft.Maui.Dispatching;
 namespace HomeMaintenanceMAUI {
   /// <summary>Displays task totals and upcoming jobs from records supplied by the dashboard.</summary>
   public partial class WorkshopHomeView : ContentView {
-    // BEFORE: No summary snapshot, date, or timer fields existed.
-    // AFTER: These GUI-only fields retain the last supplied records and refresh their counts
+    // BEFORE (the previous description):
+    // These GUI-only fields retain the last supplied records and refresh their counts
     // after a date change. They never load/save accounts or refresh the team's task lists.
+    // AFTER: These GUI-only fields retain the last supplied records for the counters and
+    // upcoming display. A date change calls the team's unchanged SetTasks method again;
+    // no account is read or saved, and no task record or filtering rule is changed.
     /// <summary>Retains immutable records last supplied to our summary display.</summary>
     private IReadOnlyList<TaskRecord> _summaryTasks = Array.Empty<TaskRecord>();
 
@@ -85,7 +88,7 @@ namespace HomeMaintenanceMAUI {
     /// <summary>Starts our display-only date check when the Home view enters the window.</summary>
     private void OnSummaryLoaded(object? sender, EventArgs e) {
       // BEFORE: No OnSummaryLoaded method or date-check timer existed.
-      // AFTER: Create one timer, refresh stale counts immediately, and check every 30 seconds.
+      // AFTER: Create one timer, refresh stale counts/list immediately, and check every 30 seconds.
       if (_summaryTimer is null) {
         _summaryTimer = Dispatcher.CreateTimer();
         _summaryTimer.Interval = TimeSpan.FromSeconds(30);
@@ -107,12 +110,23 @@ namespace HomeMaintenanceMAUI {
       _summaryTimer = null;
     }
 
-    /// <summary>Recalculates only our four counters when the local calendar date changes.</summary>
+    /// <summary>Refreshes our counters and upcoming display when the local date changes.</summary>
     private void OnSummaryTimerTick(object? sender, EventArgs e) {
-      // BEFORE: Counts changed only when DashboardPage supplied records on page appearance.
-      // AFTER: Reuse SetTaskSummary with its cached records when the calendar date changes.
-      // The team's SetTasks methods, upcoming-date filter, and storage reads remain untouched.
+      // BEFORE (the complete executable body):
+      // if (_summaryDate != DateTime.Today) {
+      //   SetTaskSummary(_summaryTasks);
+      // }
+      // The counters changed, but Upcoming Jobs retained yesterday's date classification.
+      // AFTER: Pass the cached pending, unarchived records in due-date order to SetTasks,
+      // then refresh the counters. This repeats the dashboard's existing display selection
+      // while leaving the team's SetTasks method and its date filter exactly unchanged.
+      // SetTasks(activeTasks); is the added list refresh; storage is never read or written.
       if (_summaryDate != DateTime.Today) {
+        var activeTasks = _summaryTasks
+            .Where(task => !task.IsArchived && task.Status == Status.Pending)
+            .OrderBy(task => task.DueDate)
+            .ToList();
+        SetTasks(activeTasks);
         SetTaskSummary(_summaryTasks);
       }
     }

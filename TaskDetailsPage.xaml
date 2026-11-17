@@ -4,7 +4,15 @@
              xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              x:Class="HomeMaintenanceMAUI.TaskDetailsPage"
              Title="Task details" Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource WorkshopBackground}">
+             BackgroundColor="{DynamicResource WorkshopCanvas}">
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: BackgroundColor="{StaticResource WorkshopBackground}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopCanvas}"
+       BEFORE: TextColor="{StaticResource WorkshopPaper}"
+       AFTER:  TextColor="{DynamicResource WorkshopOnNavy}"
+       BEFORE: Color="{StaticResource WorkshopSteel}"
+       AFTER:  Color="{DynamicResource WorkshopBorder}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
   <ContentPage.Behaviors>
     <local:WorkshopLightThemeBehavior />
   </ContentPage.Behaviors>
@@ -52,14 +60,14 @@
             <Border BackgroundColor="{StaticResource WorkshopNavy}" StrokeThickness="0"
                     StrokeShape="Rectangle" Padding="20,12">
               <Label Text="JOB SHEET" Style="{StaticResource WorkshopPageHeading}"
-                     FontSize="26" TextColor="{StaticResource WorkshopPaper}"
+                     FontSize="26" TextColor="{DynamicResource WorkshopOnNavy}"
                      SemanticProperties.HeadingLevel="Level2" />
             </Border>
             <VerticalStackLayout Grid.Row="1" Padding="20" Spacing="16">
               <Label x:Name="TaskNameLabel" Style="{StaticResource WorkshopPageHeading}"
                      FontSize="30" LineBreakMode="WordWrap"
                      SemanticProperties.HeadingLevel="Level2" />
-              <BoxView Color="{StaticResource WorkshopSteel}" HeightRequest="1" />
+              <BoxView Color="{DynamicResource WorkshopBorder}" HeightRequest="1" />
               <Label Text="Description / notes" Style="{StaticResource WorkshopLabel}"
                      FontAttributes="Bold" />
               <Label x:Name="DescriptionLabel" Style="{StaticResource WorkshopLabel}"
@@ -74,7 +82,7 @@
             <Border BackgroundColor="{StaticResource WorkshopNavy}" StrokeThickness="0"
                     StrokeShape="Rectangle" Padding="20,12">
               <Label Text="TASK INFORMATION" Style="{StaticResource WorkshopPageHeading}"
-                     FontSize="26" TextColor="{StaticResource WorkshopPaper}"
+                     FontSize="26" TextColor="{DynamicResource WorkshopOnNavy}"
                      SemanticProperties.HeadingLevel="Level2" />
             </Border>
             <!-- These labels show the supplied values without loading or updating a task. -->
@@ -82,7 +90,18 @@
               <Label Text="Due date" Style="{StaticResource WorkshopSubtitle}" />
               <Label x:Name="DueDateLabel" Style="{StaticResource WorkshopLabel}" />
               <Label Text="Status" Style="{StaticResource WorkshopSubtitle}" Margin="0,12,0,0" />
-              <Label x:Name="StatusLabel" Style="{StaticResource WorkshopLabel}" />
+              <!-- BEFORE:
+                   <Label x:Name="StatusLabel" Style="{StaticResource WorkshopLabel}" />
+                   AFTER: The status display is the empty picker below. DisplayStatus="Pending"
+                   supplies the initial display; ShowTask supplies an existing task's actual
+                   status. No Items, ItemsSource, or selection/save handler is added. -->
+              <Border Style="{StaticResource WorkshopCard}" Padding="0">
+                <local:WorkshopStatusPicker x:Name="StatusPicker" DisplayStatus="Pending"
+                                            Style="{StaticResource WorkshopPicker}"
+                                            FontSize="20"
+                                            SemanticProperties.Description="Task status"
+                                            ToolTipProperties.Text="Status options are not available yet" />
+              </Border>
               <Label Text="Task type" Style="{StaticResource WorkshopSubtitle}"
                      Margin="0,12,0,0" />
               <Label x:Name="TaskTypeLabel" Style="{StaticResource WorkshopLabel}"

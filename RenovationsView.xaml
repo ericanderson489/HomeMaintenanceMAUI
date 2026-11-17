@@ -3,7 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              x:Class="HomeMaintenanceMAUI.RenovationsView"
-             BackgroundColor="{StaticResource WorkshopBackground}">
+             BackgroundColor="{DynamicResource WorkshopCanvas}">
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: BackgroundColor="{StaticResource WorkshopBackground}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopCanvas}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
   <!-- This destination contains presentation-only text until renovation details are defined. -->
   <ScrollView>
     <VerticalStackLayout Padding="20,16" Spacing="20">
