@@ -21,7 +21,7 @@ namespace HomeMaintenanceMAUI {
     internal TaskDetailsPage(TaskRecord task) {
       InitializeComponent();
       _task = task;
-      // BEFORE: The six label assignments now in ShowTask were directly in this constructor.
+      // BEFORE: The six display assignments now in ShowTask were directly in this constructor.
       // AFTER: ShowTask(task); also runs after a successful edit, refreshing the same labels.
       ShowTask(task);
     }
@@ -35,7 +35,11 @@ namespace HomeMaintenanceMAUI {
           ? "No notes added."
           : task.Description;
       DueDateLabel.Text = task.DueDate.ToString("MMM d, yyyy");
-      StatusLabel.Text = task.Status.ToString();
+      // BEFORE: StatusLabel.Text = task.Status.ToString();
+      // AFTER: StatusPicker.DisplayStatus = task.Status.ToString();
+      // Use the current saved status as the empty picker's visible caption. The GUI adds
+      // no status options and cannot overwrite a task's status, archive flag, or history.
+      StatusPicker.DisplayStatus = task.Status.ToString();
       TaskTypeLabel.Text = task.Type;
       RepeatLabel.Text = task.Repeat.ToString();
     }

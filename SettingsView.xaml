@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:HomeMaintenanceMAUI"
+             x:Class="HomeMaintenanceMAUI.SettingsView"
+             BackgroundColor="{DynamicResource WorkshopCanvas}">
+  <!-- BEFORE: No Settings view existed.
+       AFTER: Appearance changes our GUI theme; Windows startup is an explicitly inactive
+       handoff control. It has no Clicked handler, command, or operating-system integration. -->
+  <ScrollView>
+    <VerticalStackLayout Padding="20,16" Spacing="20">
+      <VerticalStackLayout Spacing="8">
+        <Label Text="Settings" Style="{StaticResource WorkshopPageHeading}" Margin="8,0" />
+        <Label Text="Make the workshop yours." Style="{StaticResource WorkshopSubtitle}"
+               Margin="6,2,0,0" />
+        <local:WorkshopRuler />
+      </VerticalStackLayout>
+      <Border Style="{StaticResource WorkshopCard}" Padding="20">
+        <VerticalStackLayout Spacing="14">
+          <Label Text="Appearance" Style="{StaticResource WorkshopPageHeading}" FontSize="28"
+                 SemanticProperties.HeadingLevel="Level2" />
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+            <Label Text="Dark mode" Style="{StaticResource WorkshopLabel}"
+                   VerticalOptions="Center" />
+            <Switch x:Name="DarkModeSwitch" Grid.Column="1"
+                    OnColor="{DynamicResource WorkshopGold}"
+                    ThumbColor="{DynamicResource WorkshopText}"
+                    Toggled="OnDarkModeToggled"
+                    SemanticProperties.Description="Dark mode"
+                    SemanticProperties.Hint="Change the app appearance and remember this choice" />
+          </Grid>
+          <Label Text="Your appearance choice is saved on this device."
+                 Style="{StaticResource WorkshopSubtitle}" FontSize="16" />
+        </VerticalStackLayout>
+      </Border>
+      <Border Style="{StaticResource WorkshopCard}" Padding="20">
+        <VerticalStackLayout Spacing="14">
+          <Label Text="Windows startup" Style="{StaticResource WorkshopPageHeading}" FontSize="28"
+                 SemanticProperties.HeadingLevel="Level2" />
+          <Label Text="Open the app when you sign in to Windows."
+                 Style="{StaticResource WorkshopLabel}" />
+          <Button x:Name="WindowsStartupButton" Text="Allow Windows startup"
+                  Style="{StaticResource WorkshopButton}" IsEnabled="False"
+                  HorizontalOptions="Start"
+                  SemanticProperties.Hint="Coming soon; Windows startup is not enabled" />
+          <Label Text="Coming soon. Windows startup is not enabled by this setting."
+                 Style="{StaticResource WorkshopSubtitle}" FontSize="16" />
+        </VerticalStackLayout>
+      </Border>
+    </VerticalStackLayout>
+  </ScrollView>
+</ContentView>

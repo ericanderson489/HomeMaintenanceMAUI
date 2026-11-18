@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:HomeMaintenanceMAUI"
+             x:Class="HomeMaintenanceMAUI.WorkshopTaskSortView">
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: Stroke="{StaticResource WorkshopSteel}"
+       AFTER:  Stroke="{DynamicResource WorkshopBorder}"
+       BEFORE: BackgroundColor="{StaticResource WorkshopPaper}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopSurface}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
+  <!-- BEFORE: No task-ordering control existed.
+       AFTER: This reusable header control changes only the order of displayed records. -->
+  <FlexLayout Direction="Row" Wrap="Wrap" AlignItems="Center" Margin="4,0">
+    <Label Text="Sort by" Style="{StaticResource WorkshopLabel}"
+           VerticalOptions="Center" Margin="0,0,16,0" />
+    <Border Stroke="{DynamicResource WorkshopBorder}" StrokeThickness="1"
+            StrokeShape="Rectangle" Padding="0"
+            BackgroundColor="{DynamicResource WorkshopSurface}">
+      <local:WorkshopFilterPicker x:Name="SortPicker" WidthRequest="200"
+                                  Style="{StaticResource WorkshopPicker}" FontSize="20"
+                                  MinimumHeightRequest="44"
+                                  SemanticProperties.Description="Sort tasks by"
+                                  SelectedIndexChanged="OnSortChanged">
+        <Picker.Items>
+          <x:String>Due date</x:String>
+          <x:String>Task type</x:String>
+          <x:String>Repeat frequency</x:String>
+        </Picker.Items>
+      </local:WorkshopFilterPicker>
+    </Border>
+  </FlexLayout>
+</ContentView>

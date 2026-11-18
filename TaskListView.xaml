@@ -1,62 +1,130 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              xmlns:records="clr-namespace:HomeMaintenanceMAUI.Models.Records"
              x:Class="HomeMaintenanceMAUI.TaskListView">
-  <Border BackgroundColor="{StaticResource WorkshopPaper}" StrokeThickness="0" Padding="8">
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: BackgroundColor="{StaticResource WorkshopPaper}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopSurface}"
+       BEFORE: BackgroundColor="{StaticResource WorkshopSteel}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopTableHeader}"
+       BEFORE: Value="{StaticResource WorkshopSelected}"
+       AFTER:  Value="{DynamicResource WorkshopSelection}"
+       BEFORE: Color="{StaticResource WorkshopSteel}"
+       AFTER:  Color="{DynamicResource WorkshopBorder}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
+  <Border BackgroundColor="{DynamicResource WorkshopSurface}" StrokeThickness="0" Padding="8">
     <Border Style="{StaticResource WorkshopCard}" Padding="0">
-      <Grid RowDefinitions="Auto,*,Auto" MinimumHeightRequest="180">
-        <!-- Column headings. Keep these widths aligned with the task row template. -->
-        <Grid ColumnDefinitions="2*,*,*,24" Padding="10,7" ColumnSpacing="0" Margin="3,3,3,0"
-              BackgroundColor="{StaticResource WorkshopSteel}">
-          <Label Text="Task" Style="{StaticResource WorkshopLabel}" />
-          <Label Grid.Column="1" Text="Due date" Style="{StaticResource WorkshopLabel}" />
-          <Label Grid.Column="2" Text="Status" Style="{StaticResource WorkshopLabel}" />
-        </Grid>
-        <!-- BEFORE: <CollectionView x:Name="TaskRows" Grid.Row="1">
-             AFTER: SelectionMode="Single" and SelectionChanged="OnTaskSelectionChanged"
-             are added below; Tapped="OnTaskTapped" opens the clicked row's details.
-             BEFORE: <DataTemplate> and ColumnDefinitions="2*,*,*".
-             AFTER: x:DataType="records:TaskRecord" gives typed bindings; the fourth 24-unit
-             column displays a chevron to indicate that each row opens another page. -->
-        <CollectionView x:Name="TaskRows" Grid.Row="1" SelectionMode="Single"
-                        SelectionChanged="OnTaskSelectionChanged">
-          <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="records:TaskRecord">
-              <Grid ColumnDefinitions="2*,*,*,24" Padding="10,8" Margin="3,0"
-                    MinimumHeightRequest="48" BackgroundColor="{StaticResource WorkshopPaper}"
-                    SemanticProperties.Hint="Open task details">
-                <Grid.GestureRecognizers>
-                  <TapGestureRecognizer Tapped="OnTaskTapped" CommandParameter="{Binding .}" />
-                </Grid.GestureRecognizers>
-                <!-- Highlight only the selected row; this does not change the task itself. -->
-                <VisualStateManager.VisualStateGroups>
-                  <VisualStateGroup x:Name="CommonStates">
-                    <VisualState x:Name="Normal" />
-                    <VisualState x:Name="Selected">
-                      <VisualState.Setters>
-                        <Setter Property="BackgroundColor"
-                                Value="{StaticResource WorkshopSelected}" />
-                      </VisualState.Setters>
-                    </VisualState>
-                  </VisualStateGroup>
-                </VisualStateManager.VisualStateGroups>
-                <Label Text="{Binding Name}" Style="{StaticResource WorkshopLabel}" />
-                <Label Grid.Column="1"
-                       Text="{Binding DueDate, StringFormat='{0:MMM d, yyyy}'}"
-                       Style="{StaticResource WorkshopLabel}" />
-                <Label Grid.Column="2" Text="{Binding Status}"
-                       Style="{StaticResource WorkshopLabel}" />
-                <Label Grid.Column="3" Text="›" Style="{StaticResource WorkshopSubtitle}"
-                       FontSize="24" HorizontalTextAlignment="Center"
-                       InputTransparent="True" AutomationProperties.IsInAccessibleTree="False" />
-              </Grid>
-            </DataTemplate>
-          </CollectionView.ItemTemplate>
-        </CollectionView>
+      <!-- BEFORE: <Grid RowDefinitions="Auto,*,Auto" MinimumHeightRequest="180">
+           AFTER: Header and rows share the horizontal viewport below; the footer stays
+           outside it in row 1. The table fills wider windows and keeps a 640-unit minimum
+           width in narrow windows so the added type and native status fields stay legible.
+           Horizontal scrolling moves headings and rows together without moving the footer. -->
+      <Grid RowDefinitions="*,Auto" MinimumHeightRequest="180">
+        <ScrollView x:Name="TaskTableViewport" Orientation="Horizontal"
+                    SizeChanged="OnTaskViewportSizeChanged"
+                    HorizontalScrollBarVisibility="Default"
+                    VerticalScrollBarVisibility="Never">
+          <!-- BEFORE: <Grid RowDefinitions="Auto,*" MinimumWidthRequest="640"
+                       WidthRequest="{Binding Width, Source={x:Reference TaskTableViewport}}">
+               AFTER: WidthRequest starts at 640. The viewport's SizeChanged handler sets
+               max(640, viewport.Width), so children measure at their final arranged width.
+               This prevents narrow-window wrapping/misalignment without a Source binding
+               or project compilation flag changes; row bindings still use TaskRecord. -->
+          <Grid x:Name="TaskTable" RowDefinitions="Auto,*" WidthRequest="640">
+            <!-- BEFORE: Both heading and row grids used ColumnDefinitions="2*,*,*,24".
+                 AFTER: ColumnDefinitions="2*,1.25*,*,1.25*,24" adds Task type between
+                 Due date and Status. The date and status columns receive extra space
+                 to keep dates on one line at the table minimum and show the dropdown arrow.
+                 BEFORE: ColumnDefinitions="2*,*,*,1.25*,24" gave dates too little room,
+                 increasing row height beyond the shortest window's available viewport.
+                 BEFORE: <Label Grid.Column="2" Text="Status" Style="{StaticResource WorkshopLabel}" />
+                 AFTER: Task type occupies column 2; Status moves to column 3. Keep the
+                 heading and row definitions identical so their columns stay aligned. -->
+            <Grid ColumnDefinitions="2*,1.25*,*,1.25*,24" Padding="10,7" ColumnSpacing="0" Margin="3,3,3,0"
+                  BackgroundColor="{DynamicResource WorkshopTableHeader}">
+              <Label Text="Task" Style="{StaticResource WorkshopLabel}" />
+              <Label Grid.Column="1" Text="Due date" Style="{StaticResource WorkshopLabel}" />
+              <Label Grid.Column="2" Text="Task type" Style="{StaticResource WorkshopLabel}" />
+              <Label Grid.Column="3" Text="Status" Style="{StaticResource WorkshopLabel}" />
+            </Grid>
+            <!-- BEFORE: <CollectionView x:Name="TaskRows" Grid.Row="1">
+                 AFTER: SelectionMode="Single" and SelectionChanged="OnTaskSelectionChanged"
+                 are added below; Tapped="OnTaskTapped" opens the clicked row's details.
+                 BEFORE: <DataTemplate> and ColumnDefinitions="2*,*,*".
+                 AFTER: x:DataType="records:TaskRecord" gives typed bindings; the fourth 24-unit
+                 column displays a chevron to indicate that each row opens another page. -->
+            <CollectionView x:Name="TaskRows" Grid.Row="1" SelectionMode="Single"
+                            SelectionChanged="OnTaskSelectionChanged">
+              <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="records:TaskRecord">
+                  <!-- BEFORE: MinimumHeightRequest="48".
+                       AFTER: MinimumHeightRequest="60" accommodates a compact native picker
+                       and the existing vertical padding without changing row navigation. -->
+                  <Grid ColumnDefinitions="2*,1.25*,*,1.25*,24" Padding="10,8" Margin="3,0"
+                        MinimumHeightRequest="60" BackgroundColor="{DynamicResource WorkshopSurface}"
+                        SemanticProperties.Hint="Double-click to open task details, or select and use View details">
+                    <Grid.GestureRecognizers>
+                      <!-- BEFORE: <TapGestureRecognizer Tapped="OnTaskTapped" CommandParameter="{Binding .}" />
+                           AFTER: NumberOfTapsRequired="2" prevents a single click opening details.
+                           BEFORE: SemanticProperties.Hint="Open task details"
+                           AFTER: SemanticProperties.Hint="Double-click to open task details, or select and use View details" -->
+                      <TapGestureRecognizer NumberOfTapsRequired="2" Tapped="OnTaskTapped"
+                                            CommandParameter="{Binding .}" />
+                    </Grid.GestureRecognizers>
+                    <!-- Highlight only the selected row; this does not change the task itself. -->
+                    <VisualStateManager.VisualStateGroups>
+                      <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Selected">
+                          <VisualState.Setters>
+                            <Setter Property="BackgroundColor"
+                                    Value="{DynamicResource WorkshopSelection}" />
+                          </VisualState.Setters>
+                        </VisualState>
+                      </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <Label Text="{Binding Name}" Style="{StaticResource WorkshopLabel}" />
+                    <Label Grid.Column="1"
+                           Text="{Binding DueDate, StringFormat='{0:MMM d, yyyy}'}"
+                           Style="{StaticResource WorkshopLabel}" />
+                    <!-- BEFORE: The row had no Task type cell.
+                         AFTER: The existing Type value is shown without changing the record.
+                         Truncation limits narrow rows; the tooltip exposes the full type. -->
+                    <Label Grid.Column="2" Text="{Binding Type}"
+                           Style="{StaticResource WorkshopLabel}" LineBreakMode="TailTruncation"
+                           ToolTipProperties.Text="{Binding Type}" />
+                    <!-- BEFORE:
+                         <Label Grid.Column="2" Text="{Binding Status}"
+                                Style="{StaticResource WorkshopLabel}" />
+                         AFTER: The empty dropdown below shows the saved status one-way.
+                         It contains no Items/ItemsSource, selection handler, or save action;
+                         the team can add disposition choices later. No task data changes. -->
+                    <Border Grid.Column="3" Style="{StaticResource WorkshopCard}" Padding="0"
+                            VerticalOptions="Start">
+                      <local:WorkshopStatusPicker DisplayStatus="{Binding Status, Mode=OneWay, StringFormat='{0}'}"
+                                                  Style="{StaticResource WorkshopPicker}"
+                                                  MinimumHeightRequest="40"
+                                                  SemanticProperties.Description="Task status"
+                                                  ToolTipProperties.Text="Status options are not available yet" />
+                    </Border>
+                    <!-- BEFORE: <Label Grid.Column="3" Text="›" Style="{StaticResource WorkshopSubtitle}"
+                         AFTER: Grid.Column="4" keeps the existing details indicator last. -->
+                    <Label Grid.Column="4" Text="›" Style="{StaticResource WorkshopSubtitle}"
+                           FontSize="24" HorizontalTextAlignment="Center"
+                           InputTransparent="True" AutomationProperties.IsInAccessibleTree="False" />
+                  </Grid>
+                </DataTemplate>
+              </CollectionView.ItemTemplate>
+            </CollectionView>
+          </Grid>
+        </ScrollView>
         <!-- Footer. Contains the details button and the empty-list message. -->
-        <Grid Grid.Row="2" RowDefinitions="1,Auto">
-          <BoxView Color="{StaticResource WorkshopSteel}" HeightRequest="1" />
+        <!-- BEFORE: <Grid Grid.Row="2" RowDefinitions="1,Auto">
+             AFTER: Grid.Row="1" keeps this footer below the scrollable table. -->
+        <Grid Grid.Row="1" RowDefinitions="1,Auto">
+          <BoxView Color="{DynamicResource WorkshopBorder}" HeightRequest="1" />
           <FlexLayout Grid.Row="1" Padding="0,3,8,3" AlignItems="Center" Wrap="Wrap">
             <!-- BEFORE:
                  <Button Text="View details" IsEnabled="False" Margin="0,0,12,0"
@@ -67,7 +135,10 @@
             <Button x:Name="ViewDetailsButton" Text="View details" IsEnabled="False"
                     Clicked="OnViewDetailsClicked" Margin="0,0,12,0"
                     Style="{StaticResource WorkshopButton}" />
-            <Label x:Name="SelectionHintLabel" Text="Click a task to view its details."
+            <!-- BEFORE: Text="Click a task to view its details."
+                 AFTER: Text="Double-click a task to view its details."
+                 Single-click selection and the explicit View details button stay available. -->
+            <Label x:Name="SelectionHintLabel" Text="Double-click a task to view its details."
                    IsVisible="False" Style="{StaticResource WorkshopSubtitle}"
                    VerticalOptions="Center" />
             <Label x:Name="EmptyMessageLabel"

@@ -4,7 +4,16 @@
              xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              x:Class="HomeMaintenanceMAUI.DashboardPage"
              Title="Workshop" Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource WorkshopBackground}">
+             BackgroundColor="{DynamicResource WorkshopCanvas}">
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: BackgroundColor="{StaticResource WorkshopBackground}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopCanvas}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
+  <!-- BEFORE: This page had no theme behavior.
+       AFTER: Our theme behavior follows the saved light/dark preference for native controls. -->
+  <ContentPage.Behaviors>
+    <local:WorkshopLightThemeBehavior />
+  </ContentPage.Behaviors>
   <Grid x:Name="WorkspaceGrid" ColumnDefinitions="205,*" RowDefinitions="Auto,*">
     <!-- BEFORE: WorkspaceGrid had no Grid.Behaviors collection.
          AFTER: <Grid.Behaviors><local:WorkshopDashboardLayoutBehavior /></Grid.Behaviors>
@@ -65,6 +74,12 @@
       <local:WorkshopNavigationButton x:Name="RenovationsButton" Grid.Row="3" Text="Renovations"
               Clicked="OnRenovationsClicked"
               Style="{StaticResource WorkshopNavigationButton}" />
+      <!-- BEFORE: Row 4 was only unused flexible space.
+           AFTER: The Settings action sits at its bottom without changing the existing rows. -->
+      <local:WorkshopNavigationButton x:Name="SettingsButton" Grid.Row="4" Text="Settings"
+              Clicked="OnSettingsClicked" VerticalOptions="End"
+              HeightRequest="44" MinimumHeightRequest="44"
+              Style="{StaticResource WorkshopNavigationButton}" />
       <Button Grid.Row="5" Text="Sign out" Clicked="OnSignOutClicked"
               HorizontalOptions="Start"
               Style="{StaticResource WorkshopNavigationButton}" />
@@ -72,9 +87,21 @@
     <VerticalStackLayout x:Name="CompactNavigation" Grid.Column="1" IsVisible="False"
                          Padding="12" Spacing="10"
                          BackgroundColor="{StaticResource WorkshopNavy}">
-      <Label Text="BREACHLESS BUNGALOW · WORKSHOP"
-             FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
-             TextColor="{StaticResource WorkshopGold}" FontSize="16" />
+      <!-- BEFORE:
+           <Label Text="BREACHLESS BUNGALOW · WORKSHOP"
+                  FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
+                  TextColor="{StaticResource WorkshopGold}" FontSize="16" />
+           AFTER: Keep that brand label inside a flexible column and add Settings beside it.
+           This keeps the four existing compact-navigation actions in their same two rows. -->
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+        <Label Text="BREACHLESS BUNGALOW · WORKSHOP"
+               FontFamily="{StaticResource WorkshopHeadingFont}" FontAttributes="Bold"
+               TextColor="{StaticResource WorkshopGold}" FontSize="16"
+               VerticalOptions="Center" LineBreakMode="WordWrap" />
+        <Button x:Name="CompactSettingsButton" Grid.Column="1" Text="Settings"
+                Clicked="OnSettingsClicked" Style="{StaticResource WorkshopNavigationButton}"
+                FontSize="16" Padding="10,8" HeightRequest="44" MinimumHeightRequest="44" />
+      </Grid>
       <!-- BEFORE:
            <FlexLayout Direction="Row" Wrap="Wrap">
              <Button x:Name="CompactHomeButton" Text="Home" Clicked="OnHomeClicked"
@@ -118,6 +145,8 @@
       <local:WorkshopHomeView x:Name="HomeView" ViewTasksRequested="OnTasksClicked" />
       <local:TasksView x:Name="TasksView" IsVisible="False" />
       <local:RenovationsView x:Name="RenovationsView" IsVisible="False" />
+      <!-- BEFORE: No Settings destination existed. AFTER: Show our GUI-only settings view. -->
+      <local:SettingsView x:Name="SettingsView" IsVisible="False" />
     </Grid>
   </Grid>
 </ContentPage>

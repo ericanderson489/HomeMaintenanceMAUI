@@ -3,7 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              x:Class="HomeMaintenanceMAUI.TasksView"
-             BackgroundColor="{StaticResource WorkshopBackground}">
+             BackgroundColor="{DynamicResource WorkshopCanvas}">
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: BackgroundColor="{StaticResource WorkshopBackground}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopCanvas}"
+       BEFORE: Stroke="{StaticResource WorkshopSteel}"
+       AFTER:  Stroke="{DynamicResource WorkshopBorder}"
+       BEFORE: BackgroundColor="{StaticResource WorkshopPaper}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopSurface}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
   <!-- BEFORE: <Grid Padding="20,16" RowDefinitions="Auto,Auto,*" RowSpacing="12">
        AFTER: <Grid Padding="20,16" RowDefinitions="Auto,*" RowSpacing="12">
        The original heading and filter now occupy a bounded header ScrollView. The existing
@@ -16,7 +24,9 @@
       <local:WorkshopWorkspaceLayoutBehavior HeaderName="TasksHeaderScroll" SummaryName="" />
     </Grid.Behaviors>
     <ScrollView x:Name="TasksHeaderScroll" Orientation="Vertical">
-      <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
+      <!-- BEFORE: <Grid RowDefinitions="Auto,Auto" RowSpacing="12">
+           AFTER: One additional Auto row holds the new display-order control. -->
+      <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="12">
         <VerticalStackLayout Spacing="8" Margin="0,0,0,8">
           <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Center">
             <Label Text="On the workbench" Style="{StaticResource WorkshopPageHeading}"
@@ -32,9 +42,9 @@
           <Label Text="Show jobs" Style="{StaticResource WorkshopLabel}"
                  VerticalOptions="Center" Margin="0,0,16,0" />
           <!-- The native picker has one external label and a visible, keyboard-accessible arrow. -->
-          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+          <Border Stroke="{DynamicResource WorkshopBorder}" StrokeThickness="1"
                   StrokeShape="Rectangle" Padding="0"
-                  BackgroundColor="{StaticResource WorkshopPaper}">
+                  BackgroundColor="{DynamicResource WorkshopSurface}">
             <local:WorkshopFilterPicker x:Name="JobFilterPicker" WidthRequest="200"
                                         SemanticProperties.Description="Show jobs"
                                         Style="{StaticResource WorkshopPicker}" FontSize="20"
@@ -50,6 +60,11 @@
             </local:WorkshopFilterPicker>
           </Border>
         </FlexLayout>
+        <!-- BEFORE: There was no sorting control after the existing Show jobs picker.
+             AFTER: The new control below orders the existing JobList display. The Show jobs
+             choices and team-owned task loading/filtering code remain unchanged. -->
+        <local:WorkshopTaskSortView x:Name="TasksSortControl" Grid.Row="2"
+                                    TargetList="{x:Reference JobList}" />
       </Grid>
     </ScrollView>
     <!-- BEFORE:
