@@ -1,9 +1,15 @@
+using HomeMaintenanceMAUI.Models;
+
 namespace HomeMaintenanceMAUI {
   // BEFORE: This file/class did not exist. TaskDetailsPage used a read-only StatusLabel.
   // AFTER: This empty picker displays the supplied status inside its field without adding
   // choices, a status-change handler, or any task persistence behavior.
   /// <summary>Provides an empty status dropdown for the team's future task actions.</summary>
   public class WorkshopStatusPicker : WorkshopFilterPicker {
+    // Parameterless constructor to set ItemsSource of each picker
+    public WorkshopStatusPicker() {
+      ItemsSource = Enum.GetValues(typeof(Status));
+    }
     /// <summary>Stores only the status text displayed by this presentation control.</summary>
     public static readonly BindableProperty DisplayStatusProperty = BindableProperty.Create(
         nameof(DisplayStatus), typeof(string), typeof(WorkshopStatusPicker), "Pending",

@@ -1,4 +1,6 @@
 using HomeMaintenanceMAUI.Models.Records;
+using HomeMaintenanceMAUI.Services;
+using System.Threading.Tasks;
 
 namespace HomeMaintenanceMAUI {
   /// <summary>Displays the Workshop table and footer without loading or changing tasks.</summary>
@@ -121,6 +123,32 @@ namespace HomeMaintenanceMAUI {
         _isOpeningDetails = false;
         ViewDetailsButton.IsEnabled = _selectedTask is not null;
       }
+    }
+    private void OnTaskTypeChanged(object? sender, EventArgs e) {
+      // Validation of inputs, tasks, and accounts related to this function
+      if (sender is not WorkshopStatusPicker picker || picker.SelectedIndex == -1)
+        return;
+
+      if (picker.BindingContext is not TaskRecord currentTask)
+        return;
+
+      if (_selectedTask is null || UserSession.CurrentAccount is null)
+        return; 
+
+      // Map the selected index to the Status enum
+      Models.Status newStatus = (Models.Status)picker.SelectedIndex;
+
+      // Guard against firing when BindingContext is first set or unchanged
+      if (currentTask.Status == newStatus)
+        return;
+
+      // Create the updated immutable record
+      TaskRecord updatedTask = currentTask with {
+        Status = newStatus
+      };
+
+      // TODO: Save to the account and notify user
+      updatedTask = new AccountStore().UpdateTask(UserSession.CurrentAccount.GetAccountUserName(), _selectedTask, updatedTask);
     }
   }
 }

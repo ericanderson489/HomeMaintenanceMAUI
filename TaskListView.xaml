@@ -103,11 +103,12 @@
                          the team can add disposition choices later. No task data changes. -->
                     <Border Grid.Column="3" Style="{StaticResource WorkshopCard}" Padding="0"
                             VerticalOptions="Start">
-                      <local:WorkshopStatusPicker DisplayStatus="{Binding Status, Mode=OneWay, StringFormat='{0}'}"
+                      <local:WorkshopStatusPicker x:Name="StatusPicker"
+                                                  DisplayStatus="{Binding Status, Mode=OneWay, StringFormat='{0}'}"
                                                   Style="{StaticResource WorkshopPicker}"
                                                   MinimumHeightRequest="40"
                                                   SemanticProperties.Description="Task status"
-                                                  ToolTipProperties.Text="Status options are not available yet" />
+                                                  SelectedIndexChanged="OnTaskTypeChanged"/>
                     </Border>
                     <!-- BEFORE: <Label Grid.Column="3" Text="›" Style="{StaticResource WorkshopSubtitle}"
                          AFTER: Grid.Column="4" keeps the existing details indicator last. -->
