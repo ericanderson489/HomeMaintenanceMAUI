@@ -39,7 +39,7 @@ namespace HomeMaintenanceMAUI {
       // AFTER: StatusPicker.DisplayStatus = task.Status.ToString();
       // Use the current saved status as the empty picker's visible caption. The GUI adds
       // no status options and cannot overwrite a task's status, archive flag, or history.
-      StatusPicker.DisplayStatus = task.Status.ToString();
+      StatusPicker.DisplayStatus = task.Status;
       TaskTypeLabel.Text = task.Type;
       RepeatLabel.Text = task.Repeat.ToString();
     }
