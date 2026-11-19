@@ -1,3 +1,5 @@
+using HomeMaintenanceMAUI.Models.Records; // Added 11/11/26
+
 namespace HomeMaintenanceMAUI {
   /// <summary>Displays the Workshop task list without connecting task services.</summary>
   public partial class TasksView : ContentView {
@@ -7,18 +9,12 @@ namespace HomeMaintenanceMAUI {
       // Select after XAML populates Items; this only sets the displayed choice, not a task filter.
       JobFilterPicker.SelectedIndex = 0;
     }
-
-    /// <summary>
-    /// Shows the requested handoff message without opening a form or changing tasks.
-    /// </summary>
+    internal void SetTasks(IReadOnlyList<TaskRecord> activeTasks) {
+      JobList.SetTasks(activeTasks);
+    }
+    // Opens the editor
     private async void OnAddTaskClicked(object sender, EventArgs e) {
-      var button = (Button)sender;
-      button.IsEnabled = false;
-      try {
-        await Shell.Current.DisplayAlert("Add task", "keifer work here.", "OK");
-      } finally {
-        button.IsEnabled = true;
-      }
+      await Shell.Current.GoToAsync(nameof(TaskEditorPage));
     }
   }
 }

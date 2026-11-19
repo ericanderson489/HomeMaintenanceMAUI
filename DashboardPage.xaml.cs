@@ -1,3 +1,6 @@
+using HomeMaintenanceMAUI.Services;
+using HomeMaintenanceMAUI.Models; // Added 11/11/26
+
 namespace HomeMaintenanceMAUI {
   /// <summary>Hosts the Workshop screens reached by the existing successful-login route.</summary>
   public partial class DashboardPage : ContentPage {
@@ -6,45 +9,164 @@ namespace HomeMaintenanceMAUI {
     /// </summary>
     public DashboardPage() {
       InitializeComponent();
-      ShowWorkspace(showHome: true);
+      // BEFORE (the rest of this constructor):
+      // ShowWorkspace(HomeView);
+      // No dashboard Back behavior existed, so Shell could pop back to the login page.
+      // AFTER: Give only this page a Back command that selects Home without popping it.
+      // The existing login route, child-page navigation, and Sign out handler are unchanged.
+      Shell.SetBackButtonBehavior(this, new BackButtonBehavior {
+        Command = new Command(ReturnToWorkshopHome)
+      });
+      ShowWorkspace(HomeView);
+    }
+
+    /// <summary>Returns workspace Back requests to Home without leaving the signed-in page.</summary>
+    private void ReturnToWorkshopHome() {
+      // BEFORE: No ReturnToWorkshopHome method existed.
+      // AFTER: Back from Tasks, Renovations, or Settings selects Home. Back on Home stays
+      // there; it never clears the session, changes task data, or navigates to login.
+      ShowWorkspace(HomeView);
+    }
+
+    /// <summary>Consumes platform Back requests at the workspace's Home boundary.</summary>
+    /// <returns>True because the dashboard handled Back without removing its page.</returns>
+    protected override bool OnBackButtonPressed() {
+      // BEFORE: No override existed; inherited Back handling could remove DashboardPage.
+      // AFTER: Use the same Home destination as the title-bar command and consume Back.
+      // Details and editor pages retain their own existing Back behavior.
+      ReturnToWorkshopHome();
+      return true;
+    }
+
+    /// <summary>Reloads the task lists and display totals when the dashboard becomes visible.</summary>
+    protected override async void OnAppearing() {
+      // Reloads the data when the dashboard comes back into view
+      base.OnAppearing();
+
+      var account = UserSession.CurrentAccount;
+      if (account is null)
+        return;
+
+      try {
+        // BEFORE:
+        // var activeTasks = new AccountStore()
+        //     .LoadTasks(account.GetAccountUserName())
+        //     .Where(task => !task.IsArchived && task.Status == Status.Pending)
+        //     .OrderBy(task => task.DueDate)
+        //     .ToList();
+        // AFTER: Retain the result of the same single read for the summary, then apply
+        // the unchanged pending/unarchived filter and ordering to both existing lists:
+        // var tasks = new AccountStore().LoadTasks(account.GetAccountUserName());
+        // var activeTasks = tasks
+        //     .Where(task => !task.IsArchived && task.Status == Status.Pending)
+        //     .OrderBy(task => task.DueDate)
+        //     .ToList();
+        var tasks = new AccountStore().LoadTasks(account.GetAccountUserName());
+        var activeTasks = tasks
+            .Where(task => !task.IsArchived && task.Status == Status.Pending)
+            .OrderBy(task => task.DueDate)
+            .ToList();
+
+        TasksView.SetTasks(activeTasks);
+        HomeView.SetTasks(activeTasks);
+        // NEW: No summary was supplied before. Include completed records for Finished;
+        // the two list inputs above keep their existing pending/unarchived behavior.
+        HomeView.SetTaskSummary(tasks);
+      } catch (Exception ex) when (
+            ex is IOException or UnauthorizedAccessException or InvalidDataException) {
+        System.Diagnostics.Debug.WriteLine($"Unable to load dashboard tasks: {ex}");
+        await DisplayAlert("Tasks unavailable", "The saved tasks could not be loaded.", "OK");
+      }
     }
 
     /// <summary>Displays Home in response to desktop or compact navigation.</summary>
     private void OnHomeClicked(object? sender, EventArgs e) {
-      ShowWorkspace(showHome: true);
+      ShowWorkspace(HomeView);
     }
 
     /// <summary>Displays the task layout without loading, filtering, or mutating tasks.</summary>
     private void OnTasksClicked(object? sender, EventArgs e) {
-      ShowWorkspace(showHome: false);
+      ShowWorkspace(TasksView);
+    }
+
+    /// <summary>
+    /// Displays the Renovations placeholder without loading or changing project data.
+    /// </summary>
+    private void OnRenovationsClicked(object? sender, EventArgs e) {
+      ShowWorkspace(RenovationsView);
+    }
+
+    /// <summary>Opens appearance settings and the inactive Windows-startup placeholder.</summary>
+    private void OnSettingsClicked(object? sender, EventArgs e) {
+      // BEFORE: No Settings navigation handler existed.
+      // AFTER: Select only our new view; task storage and startup registration are untouched.
+      ShowWorkspace(SettingsView);
     }
 
     /// <summary>
     /// Returns to the existing login route and removes the workspace navigation entry.
+    /// Sets CurrentAccount to null so that it does not live on in memory as a static variable.
     /// </summary>
     private async void OnSignOutClicked(object sender, EventArgs e) {
+      // BEFORE (the complete executable body):
+      // UserSession.CurrentAccount = null;
+      // await Shell.Current.GoToAsync("//MainPage");
+      // AFTER: Keep the team's session reset and the same route. Clear our cached login
+      // controls before navigation, and clear the destination too if Shell owns the root
+      // outside NavigationStack. Authentication and account-storage code are unchanged.
+      UserSession.CurrentAccount = null;
+      foreach (MainPage loginPage in Navigation.NavigationStack.OfType<MainPage>()) {
+        loginPage.ClearWorkshopCredentials();
+      }
       await Shell.Current.GoToAsync("//MainPage");
+      if (Shell.Current.CurrentPage is MainPage displayedLogin) {
+        displayedLogin.ClearWorkshopCredentials();
+      }
     }
 
     /// <summary>
     /// Updates screen visibility and selected navigation colors for both layouts.
     /// </summary>
-    private void ShowWorkspace(bool showHome) {
+    private void ShowWorkspace(ContentView selectedView) {
+      // BEFORE: This method set visibility and selection for Home, Tasks, and Renovations
+      // using the unchanged statements below; no Settings view or buttons existed.
+      // AFTER (the four additions below):
+      // bool showSettings = selectedView == SettingsView;
+      // SettingsView.IsVisible = showSettings;
+      // SetNavigationSelection(SettingsButton, showSettings);
+      // SetNavigationSelection(CompactSettingsButton, showSettings);
+      bool showHome = selectedView == HomeView;
+      bool showTasks = selectedView == TasksView;
+      bool showRenovations = selectedView == RenovationsView;
+      bool showSettings = selectedView == SettingsView;
       HomeView.IsVisible = showHome;
-      TasksView.IsVisible = !showHome;
+      TasksView.IsVisible = showTasks;
+      RenovationsView.IsVisible = showRenovations;
+      SettingsView.IsVisible = showSettings;
       SetNavigationSelection(HomeButton, showHome);
       SetNavigationSelection(CompactHomeButton, showHome);
-      SetNavigationSelection(TasksButton, !showHome);
-      SetNavigationSelection(CompactTasksButton, !showHome);
+      SetNavigationSelection(TasksButton, showTasks);
+      SetNavigationSelection(CompactTasksButton, showTasks);
+      SetNavigationSelection(RenovationsButton, showRenovations);
+      SetNavigationSelection(CompactRenovationsButton, showRenovations);
+      SetNavigationSelection(SettingsButton, showSettings);
+      SetNavigationSelection(CompactSettingsButton, showSettings);
     }
 
     /// <summary>
     /// Applies the original gold outline and ink fill to a selected navigation item.
     /// </summary>
     private void SetNavigationSelection(Button button, bool isSelected) {
-      ResourceDictionary resources = Application.Current!.Resources;
-      button.BackgroundColor = (Color)resources[isSelected ? "WorkshopInk" : "WorkshopNavy"];
-      button.BorderColor = (Color)resources[isSelected ? "WorkshopGold" : "WorkshopMuted"];
+      // BEFORE:
+      // ResourceDictionary resources = Application.Current!.Resources;
+      // button.BackgroundColor = (Color)resources[isSelected ? "WorkshopInk" : "WorkshopNavy"];
+      // button.BorderColor = (Color)resources[isSelected ? "WorkshopGold" : "WorkshopMuted"];
+      // AFTER: Bind our navigation colors to theme-aware resources so an already-selected
+      // button changes immediately when the user switches appearance in Settings.
+      button.SetDynamicResource(Button.BackgroundColorProperty,
+          isSelected ? "WorkshopNavigationSelected" : "WorkshopNavy");
+      button.SetDynamicResource(Button.BorderColorProperty,
+          isSelected ? "WorkshopGold" : "WorkshopSecondaryText");
     }
   }
 }

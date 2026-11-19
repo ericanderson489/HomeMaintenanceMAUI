@@ -3,6 +3,45 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
   <!-- Named styles leave existing team styles and application behavior intact. -->
   <Color x:Key="WorkshopMuted">#526771</Color>
+  <!-- BEFORE: These semantic appearance colors did not exist; controls reused the fixed
+       brand colors from the team's Colors.xaml for both text and backgrounds.
+       AFTER: The new keys below preserve the original light values and are updated by
+       WorkshopTheme for dark mode. Team color definitions and brand artwork stay unchanged. -->
+  <Color x:Key="WorkshopText">#192D35</Color>
+  <Color x:Key="WorkshopSurface">#FFFCF5</Color>
+  <Color x:Key="WorkshopCanvas">#F4F0E6</Color>
+  <Color x:Key="WorkshopBorder">#B7C0BE</Color>
+  <Color x:Key="WorkshopTableHeader">#B7C0BE</Color>
+  <Color x:Key="WorkshopSecondaryText">#526771</Color>
+  <Color x:Key="WorkshopDanger">#B84432</Color>
+  <Color x:Key="WorkshopSelection">#DFE9EC</Color>
+  <Color x:Key="WorkshopOnNavy">#FFFCF5</Color>
+  <Color x:Key="WorkshopOnGold">#192D35</Color>
+  <Color x:Key="WorkshopNavigationSelected">#192D35</Color>
+  <Color x:Key="WorkshopActionText">#B87800</Color>
+  <!-- BEFORE (exact color setters replaced throughout our named styles below):
+       <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
+       <Setter Property="TextColor" Value="{StaticResource WorkshopMuted}" />
+       <Setter Property="TextColor" Value="{StaticResource WorkshopPaper}" />
+       <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
+       <Setter Property="BorderColor" Value="{StaticResource WorkshopSteel}" />
+       <Setter Property="BorderColor" Value="{StaticResource WorkshopMuted}" />
+       <Setter Property="Stroke" Value="{StaticResource WorkshopSteel}" />
+       <Setter Property="PlaceholderColor" Value="{StaticResource WorkshopMuted}" />
+       <Setter Property="TitleColor" Value="{StaticResource WorkshopMuted}" />
+       <Setter Property="TextColor" Value="#B87800" />
+       AFTER (exact replacements, in the same order):
+       <Setter Property="TextColor" Value="{DynamicResource WorkshopText}" />
+       <Setter Property="TextColor" Value="{DynamicResource WorkshopSecondaryText}" />
+       <Setter Property="TextColor" Value="{DynamicResource WorkshopOnNavy}" />
+       <Setter Property="BackgroundColor" Value="{DynamicResource WorkshopSurface}" />
+       <Setter Property="BorderColor" Value="{DynamicResource WorkshopBorder}" />
+       <Setter Property="BorderColor" Value="{DynamicResource WorkshopSecondaryText}" />
+       <Setter Property="Stroke" Value="{DynamicResource WorkshopBorder}" />
+       <Setter Property="PlaceholderColor" Value="{DynamicResource WorkshopSecondaryText}" />
+       <Setter Property="TitleColor" Value="{DynamicResource WorkshopSecondaryText}" />
+       <Setter Property="TextColor" Value="{DynamicResource WorkshopActionText}" />
+       DynamicResource lets open controls repaint immediately when Settings changes mode. -->
   <OnPlatform x:Key="WorkshopBodyFont" x:TypeArguments="x:String" Default="OpenSansRegular">
     <On Platform="WinUI" Value="Segoe UI" />
   </OnPlatform>
@@ -12,10 +51,10 @@
   <Style x:Key="WorkshopLabel" TargetType="Label">
     <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
     <Setter Property="FontSize" Value="20" />
-    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
+    <Setter Property="TextColor" Value="{DynamicResource WorkshopText}" />
   </Style>
   <Style x:Key="WorkshopSubtitle" TargetType="Label" BasedOn="{StaticResource WorkshopLabel}">
-    <Setter Property="TextColor" Value="{StaticResource WorkshopMuted}" />
+    <Setter Property="TextColor" Value="{DynamicResource WorkshopSecondaryText}" />
   </Style>
   <Style x:Key="WorkshopPageHeading" TargetType="Label"
          BasedOn="{StaticResource WorkshopLabel}">
@@ -27,9 +66,9 @@
   <Style x:Key="WorkshopButton" TargetType="Button">
     <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
     <Setter Property="FontSize" Value="20" />
-    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
-    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
-    <Setter Property="BorderColor" Value="{StaticResource WorkshopSteel}" />
+    <Setter Property="TextColor" Value="{DynamicResource WorkshopText}" />
+    <Setter Property="BackgroundColor" Value="{DynamicResource WorkshopSurface}" />
+    <Setter Property="BorderColor" Value="{DynamicResource WorkshopBorder}" />
     <Setter Property="BorderWidth" Value="1" />
     <Setter Property="CornerRadius" Value="0" />
     <Setter Property="MinimumHeightRequest" Value="50" />
@@ -45,7 +84,7 @@
           </VisualState>
           <VisualState x:Name="PointerOver">
             <VisualState.Setters>
-              <Setter Property="BorderColor" Value="{StaticResource WorkshopMuted}" />
+              <Setter Property="BorderColor" Value="{DynamicResource WorkshopSecondaryText}" />
             </VisualState.Setters>
           </VisualState>
         </VisualStateGroup>
@@ -54,19 +93,23 @@
   </Style>
   <Style x:Key="WorkshopPrimaryButton" TargetType="Button"
          BasedOn="{StaticResource WorkshopButton}">
+    <!-- BEFORE: Gold buttons inherited TextColor from WorkshopButton without an override.
+         AFTER: <Setter Property="TextColor" Value="{DynamicResource WorkshopOnGold}" />
+         Their text stays dark against gold in both appearances. -->
+    <Setter Property="TextColor" Value="{DynamicResource WorkshopOnGold}" />
     <Setter Property="BackgroundColor" Value="{StaticResource WorkshopGold}" />
     <Setter Property="BorderColor" Value="#B88B2B" />
   </Style>
   <Style x:Key="WorkshopNavigationButton" TargetType="Button"
          BasedOn="{StaticResource WorkshopButton}">
-    <Setter Property="TextColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="TextColor" Value="{DynamicResource WorkshopOnNavy}" />
     <Setter Property="BackgroundColor" Value="{StaticResource WorkshopNavy}" />
-    <Setter Property="BorderColor" Value="{StaticResource WorkshopMuted}" />
+    <Setter Property="BorderColor" Value="{DynamicResource WorkshopSecondaryText}" />
   </Style>
   <!-- Set the whole state list through a style so it replaces inherited button states. -->
   <Style x:Key="WorkshopInactiveButton" TargetType="Button"
          BasedOn="{StaticResource WorkshopButton}">
-    <Setter Property="TextColor" Value="#B87800" />
+    <Setter Property="TextColor" Value="{DynamicResource WorkshopActionText}" />
     <Setter Property="VisualStateManager.VisualStateGroups">
       <VisualStateGroupList>
         <VisualStateGroup x:Name="CommonStates">
@@ -81,8 +124,8 @@
     </Setter>
   </Style>
   <Style x:Key="WorkshopCard" TargetType="Border">
-    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
-    <Setter Property="Stroke" Value="{StaticResource WorkshopSteel}" />
+    <Setter Property="BackgroundColor" Value="{DynamicResource WorkshopSurface}" />
+    <Setter Property="Stroke" Value="{DynamicResource WorkshopBorder}" />
     <Setter Property="StrokeThickness" Value="1" />
     <Setter Property="StrokeShape" Value="Rectangle" />
     <Setter Property="Padding" Value="16" />
@@ -90,25 +133,25 @@
   <Style x:Key="WorkshopEntry" TargetType="Entry">
     <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
     <Setter Property="FontSize" Value="15" />
-    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
-    <Setter Property="PlaceholderColor" Value="{StaticResource WorkshopMuted}" />
-    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="TextColor" Value="{DynamicResource WorkshopText}" />
+    <Setter Property="PlaceholderColor" Value="{DynamicResource WorkshopSecondaryText}" />
+    <Setter Property="BackgroundColor" Value="{DynamicResource WorkshopSurface}" />
     <Setter Property="MinimumHeightRequest" Value="44" />
   </Style>
   <Style x:Key="WorkshopEditor" TargetType="Editor">
     <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
     <Setter Property="FontSize" Value="15" />
-    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
-    <Setter Property="PlaceholderColor" Value="{StaticResource WorkshopMuted}" />
-    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="TextColor" Value="{DynamicResource WorkshopText}" />
+    <Setter Property="PlaceholderColor" Value="{DynamicResource WorkshopSecondaryText}" />
+    <Setter Property="BackgroundColor" Value="{DynamicResource WorkshopSurface}" />
     <Setter Property="MinimumHeightRequest" Value="120" />
   </Style>
   <Style x:Key="WorkshopPicker" TargetType="Picker">
     <Setter Property="FontFamily" Value="{StaticResource WorkshopBodyFont}" />
     <Setter Property="FontSize" Value="15" />
-    <Setter Property="TextColor" Value="{StaticResource WorkshopInk}" />
-    <Setter Property="TitleColor" Value="{StaticResource WorkshopMuted}" />
-    <Setter Property="BackgroundColor" Value="{StaticResource WorkshopPaper}" />
+    <Setter Property="TextColor" Value="{DynamicResource WorkshopText}" />
+    <Setter Property="TitleColor" Value="{DynamicResource WorkshopSecondaryText}" />
+    <Setter Property="BackgroundColor" Value="{DynamicResource WorkshopSurface}" />
     <Setter Property="MinimumHeightRequest" Value="44" />
   </Style>
 </ResourceDictionary>

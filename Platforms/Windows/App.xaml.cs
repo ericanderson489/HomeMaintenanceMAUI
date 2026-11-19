@@ -1,57 +1,37 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.Win32;
+using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppNotifications;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+namespace HomeMaintenanceMAUI.WinUI;
 
-namespace HomeMaintenanceMAUI.WinUI {
-  /// <summary>
-  /// Provides application-specific behavior to supplement the default Application class.
-  /// </summary>
-  public partial class App : MauiWinUIApplication {
-    /// <summary>
-    /// Initializes the singleton application object.  This is the first line of authored code
-    /// executed, and as such is the logical equivalent of main() or WinMain().
-    /// </summary>
-    public App() {
-      bool startup = true;
-      this.InitializeComponent();
-      if (startup) {
-        RegisterForWindowsStartup();
-      } else {
-        UnregisterFromWindowsStartup();
-      }
+public partial class App : MauiWinUIApplication
+{
+    public App()
+    {
+        InitializeComponent();
+    }
+
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        // Register the callback before registering with Windows.
+        // This project is unpackaged (WindowsPackageType=None): no manifest
+        // COM extension or manually defined application ID is needed.
+        var manager = AppNotificationManager.Default;
+        manager.NotificationInvoked += OnNotificationInvoked;
+        manager.Register();
+
+        base.OnLaunched(args);
+    }
+
+    private static void OnNotificationInvoked(
+        AppNotificationManager sender,
+        AppNotificationActivatedEventArgs args)
+    {
+        // The callback may run on a background thread. If you add UI
+        // navigation later, dispatch it to the UI thread first.
+        System.Diagnostics.Debug.WriteLine(
+            $"Windows notification clicked: {args.Argument}");
     }
 
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
-
-    private static void RegisterForWindowsStartup() {
-      try {
-        string? executablePath = Environment.ProcessPath;
-
-        if (string.IsNullOrWhiteSpace(executablePath)) {
-          return;
-        }
-
-        using RegistryKey? startupKey = Registry.CurrentUser.CreateSubKey(
-            @"Software\Microsoft\Windows\CurrentVersion\Run");
-
-        startupKey?.SetValue("HomeMaintenanceMAUI", $"\"{executablePath}\"");
-      } catch (Exception) {
-        // Startup registration should not prevent the app from opening.
-      }
-    }
-
-    private static void UnregisterFromWindowsStartup() {
-      try {
-        using RegistryKey? startupKey = Registry.CurrentUser.OpenSubKey(
-            @"Software\Microsoft\Windows\CurrentVersion\Run", writable: true);
-
-        startupKey?.DeleteValue("HomeMaintenanceMAUI", throwOnMissingValue: false);
-      } catch (Exception) {
-        // Startup registration should not prevent the app from opening.
-      }
-    }
-  }
 }
 

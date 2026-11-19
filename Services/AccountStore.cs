@@ -1,4 +1,3 @@
-﻿
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -65,9 +64,148 @@ internal sealed class AccountStore
         // Return the list of accounts.
         return accounts;
     }
-    // Saves a newly registered account.
-    // Existing usernames cannot be overwritten.
-    public void CreateAccount(Account account)
+    // Loads the maintenance tasks for a specific account. Login uses this
+    // because LoadAccounts() creates Account objects without exposing Tasks.
+    public List<TaskRecord> LoadTasks(string username)
+    {
+        string path = GetAccountPath(username);
+        return ReadAccount(path).Tasks.ToList();
+    }
+    // Method to save a task. Method added 11/11/26
+    public void AddTask(string username, TaskRecord task) {
+    string path = GetAccountPath(username);
+    // Hold the lock from read through replacement so two app instances
+    // can't read the same revision and overwrite each other's changes.
+    using FileStream writeLock = new(
+        path + ".lock", FileMode.OpenOrCreate,
+        FileAccess.Write, FileShare.None);
+
+    AccountRecord account = ReadAccount(path);
+    // Preserve the account details and existing tasks while appending
+    // the new task and advancing the revision.
+    AccountRecord updated = account with {
+      Revision = account.Revision + 1,
+      Tasks = [.. account.Tasks, task]
+    };
+    // Write the updated JSON to a temporary file first. If writing fails,
+    // the existing account file is still intact.
+    string tempPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+    try {
+      using (FileStream stream = new(
+          tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None)) {
+        JsonSerializer.Serialize(stream, updated, JsonOptions);
+        stream.Flush(true);
+      }
+
+      File.Move(tempPath, path, overwrite: true);
+    } finally {
+      File.Delete(tempPath);
+    }
+  }
+  /// <summary>
+  /// Replaces one unchanged task by ID while retaining its position and lifecycle metadata.
+  /// </summary>
+  /// <param name="username">The account that owns the task.</param>
+  /// <param name="original">The snapshot shown when the editor opened.</param>
+  /// <param name="edited">The five editable values submitted by the form.</param>
+  /// <returns>The record actually written to the account file.</returns>
+  /// <exception cref="InvalidOperationException">
+  /// The task was removed or changed after the editor opened.
+  /// </exception>
+  public TaskRecord UpdateTask(string username, TaskRecord original, TaskRecord edited) {
+    // BEFORE: No UpdateTask method existed. The only task-save method, AddTask, used:
+    // AccountRecord updated = account with {
+    //   Revision = account.Revision + 1,
+    //   Tasks = [.. account.Tasks, task]
+    // };
+    // AFTER: AddTask above is unchanged. This new method replaces a matching list slot:
+    // tasks[index] = saved;
+    // AccountRecord updated = account with {
+    //   Revision = account.Revision + 1,
+    //   Tasks = tasks
+    // };
+    // The replacement keeps the same ID, task count, and list order instead of appending.
+    if (edited.Id != original.Id) {
+      throw new ArgumentException("An edit must keep the original task ID.", nameof(edited));
+    }
+
+    string path = GetAccountPath(username);
+    // NEW: Use the same exclusive lock as AddTask from read through file replacement.
+    using FileStream writeLock = new(
+        path + ".lock", FileMode.OpenOrCreate,
+        FileAccess.Write, FileShare.None);
+    AccountRecord account = ReadAccount(path);
+    List<TaskRecord> tasks = account.Tasks.ToList();
+    // BEFORE:
+    // int index = tasks.FindIndex(task => task.Id == original.Id);
+    // AFTER: Reject null stored entries before either ID lookup, using the existing
+    // InvalidDataException save-error handler without changing the account file:
+    // if (tasks.Any(task => task is null)) {
+    //   throw new InvalidDataException("The account contains a null task.");
+    // }
+    // int index = tasks.FindIndex(task => task.Id == original.Id);
+    if (tasks.Any(task => task is null)) {
+      throw new InvalidDataException("The account contains a null task.");
+    }
+    int index = tasks.FindIndex(task => task.Id == original.Id);
+    if (index < 0 || tasks[index] != original) {
+      throw new InvalidOperationException(
+          "This task was changed or removed. Reopen it from the task list before editing.");
+    }
+    if (tasks.Count(task => task.Id == original.Id) != 1) {
+      throw new InvalidDataException("The account contains duplicate task IDs.");
+    }
+
+    // NEW: Copy only form fields onto the stored record. No prior update code existed.
+    // Id, Status, ScheduleAnchor, Occurrence, PreviousOccurrenceId, CompletedAt, and
+    // IsArchived retain their stored values; recurrence/completion logic is not changed.
+    TaskRecord saved = tasks[index] with {
+      Name = edited.Name,
+      Description = edited.Description,
+      Type = edited.Type,
+      DueDate = edited.DueDate,
+      Repeat = edited.Repeat
+    };
+    tasks[index] = saved;
+    // BEFORE:
+    // AccountRecord updated = account with {
+    //   Revision = account.Revision + 1,
+    //   Tasks = tasks
+    // };
+    // AFTER: Stop this edit before writing a revision that would wrap below zero:
+    // if (account.Revision == int.MaxValue) {
+    //   throw new InvalidDataException("The account revision cannot be increased.");
+    // }
+    // AccountRecord updated = account with {
+    //   Revision = account.Revision + 1,
+    //   Tasks = tasks
+    // };
+    if (account.Revision == int.MaxValue) {
+      throw new InvalidDataException("The account revision cannot be increased.");
+    }
+    AccountRecord updated = account with {
+      Revision = account.Revision + 1,
+      Tasks = tasks
+    };
+
+    // NEW: Match AddTask's temporary-file write so a failed write preserves the old file.
+    string tempPath = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+    try {
+      using (FileStream stream = new(
+          tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None)) {
+        JsonSerializer.Serialize(stream, updated, JsonOptions);
+        stream.Flush(true);
+      }
+      File.Move(tempPath, path, overwrite: true);
+    } finally {
+      File.Delete(tempPath);
+    }
+    return saved;
+  }
+
+  // Saves a newly registered account.
+  // Existing usernames cannot be overwritten.
+  public void CreateAccount(Account account)
     {   // Create a record from the account.
         // Snapshot() is defined in Models/Account.cs.
         AccountRecord record = account.Snapshot();

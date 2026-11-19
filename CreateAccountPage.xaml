@@ -5,7 +5,22 @@
              x:Class="HomeMaintenanceMAUI.CreateAccountPage"
              Title="Create account"
              Shell.NavBarIsVisible="False"
-             BackgroundColor="{StaticResource WorkshopBackground}">
+             BackgroundColor="{DynamicResource WorkshopCanvas}">
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: BackgroundColor="{StaticResource WorkshopBackground}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopCanvas}"
+       BEFORE: TextColor="{StaticResource WorkshopPaper}"
+       AFTER:  TextColor="{DynamicResource WorkshopOnNavy}"
+       BEFORE: BackgroundColor="{StaticResource WorkshopPaper}"
+       AFTER:  BackgroundColor="{DynamicResource WorkshopSurface}"
+       BEFORE: Stroke="{StaticResource WorkshopSteel}"
+       AFTER:  Stroke="{DynamicResource WorkshopBorder}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
+  <!-- BEFORE: This page had no theme behavior.
+       AFTER: Follow our saved appearance for native input controls; registration is unchanged. -->
+  <ContentPage.Behaviors>
+    <local:WorkshopLightThemeBehavior />
+  </ContentPage.Behaviors>
   <!-- Registration keeps the existing fields and handlers connected to the team's logic. -->
   <Grid ColumnDefinitions="46*,54*" RowDefinitions="Auto,*">
     <Grid.Behaviors>
@@ -62,7 +77,7 @@
       <Label x:Name="Slogan" Grid.Row="2"
              Text="A little upkeep.&#10;A lot of peace of mind."
              Style="{StaticResource WorkshopPageHeading}" FontSize="36"
-             TextColor="{StaticResource WorkshopPaper}"
+             TextColor="{DynamicResource WorkshopOnNavy}"
              HorizontalTextAlignment="Center" HorizontalOptions="Fill" />
     </Grid>
     <!-- Scrolling keeps every account field and action reachable when the keyboard opens. -->
@@ -70,8 +85,8 @@
       <Border Margin="16,18"
               Padding="24"
               VerticalOptions="Start"
-              BackgroundColor="{StaticResource WorkshopPaper}"
-              Stroke="{StaticResource WorkshopSteel}"
+              BackgroundColor="{DynamicResource WorkshopSurface}"
+              Stroke="{DynamicResource WorkshopBorder}"
               StrokeThickness="0">
         <VerticalStackLayout Spacing="8">
           <Label Text="Create your account" Style="{StaticResource WorkshopPageHeading}" />
@@ -80,7 +95,7 @@
                                HorizontalOptions="Start"
                                Margin="0,0,0,12" />
           <Label Text="First name" Style="{StaticResource WorkshopLabel}" />
-          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+          <Border Stroke="{DynamicResource WorkshopBorder}" StrokeThickness="1"
                   StrokeShape="Rectangle" Padding="0">
             <Entry x:Name="FirstNameEntry"
                    Style="{StaticResource WorkshopEntry}"
@@ -88,7 +103,7 @@
                    SemanticProperties.Description="First name" />
           </Border>
           <Label Text="Last name" Style="{StaticResource WorkshopLabel}" />
-          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+          <Border Stroke="{DynamicResource WorkshopBorder}" StrokeThickness="1"
                   StrokeShape="Rectangle" Padding="0">
             <Entry x:Name="LastNameEntry"
                    Style="{StaticResource WorkshopEntry}"
@@ -96,7 +111,7 @@
                    SemanticProperties.Description="Last name" />
           </Border>
           <Label Text="Username" Style="{StaticResource WorkshopLabel}" />
-          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+          <Border Stroke="{DynamicResource WorkshopBorder}" StrokeThickness="1"
                   StrokeShape="Rectangle" Padding="0">
             <Entry x:Name="UsernameEntry"
                    Style="{StaticResource WorkshopEntry}"
@@ -104,7 +119,7 @@
                    SemanticProperties.Description="Username" />
           </Border>
           <Label Text="Password" Style="{StaticResource WorkshopLabel}" />
-          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+          <Border Stroke="{DynamicResource WorkshopBorder}" StrokeThickness="1"
                   StrokeShape="Rectangle" Padding="0">
             <Entry x:Name="PasswordEntry"
                    IsPassword="True"
@@ -114,7 +129,7 @@
           </Border>
           <!-- Keep the MAUI version's confirmation field and validation contract. -->
           <Label Text="Confirm password" Style="{StaticResource WorkshopLabel}" />
-          <Border Stroke="{StaticResource WorkshopSteel}" StrokeThickness="1"
+          <Border Stroke="{DynamicResource WorkshopBorder}" StrokeThickness="1"
                   StrokeShape="Rectangle" Padding="0">
             <Entry x:Name="ConfirmPasswordEntry"
                    IsPassword="True"

@@ -14,5 +14,9 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(
             nameof(DashboardPage),
             typeof(DashboardPage));
-    }
+        // Register the route for the TaskEditorPage
+        Routing.RegisterRoute(
+            nameof(TaskEditorPage),
+            typeof(TaskEditorPage));
+  }
 }

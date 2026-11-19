@@ -2,12 +2,18 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HomeMaintenanceMAUI.JobSheetView">
+  <!-- GUI theme bindings: the following original expressions were fixed light colors.
+       BEFORE: TextColor="{StaticResource WorkshopPaper}"
+       AFTER:  TextColor="{DynamicResource WorkshopOnNavy}"
+       BEFORE: Color="{StaticResource WorkshopSteel}"
+       AFTER:  Color="{DynamicResource WorkshopBorder}"
+       These replacements update appearance only; task bindings and handlers are unchanged. -->
   <Border Style="{StaticResource WorkshopCard}" Padding="12">
     <VerticalStackLayout Spacing="16">
       <Grid ColumnDefinitions="*,Auto" Padding="10,8" ColumnSpacing="8"
             BackgroundColor="{StaticResource WorkshopNavy}">
         <Label Text="JOB SHEET" Style="{StaticResource WorkshopLabel}"
-               FontAttributes="Bold" TextColor="{StaticResource WorkshopPaper}"
+               FontAttributes="Bold" TextColor="{DynamicResource WorkshopOnNavy}"
                VerticalOptions="Center" />
         <Button Grid.Column="1" Text="Close" Style="{StaticResource WorkshopButton}"
                 IsEnabled="False" MinimumWidthRequest="60" />
@@ -29,7 +35,7 @@
         <Label Grid.Row="3" Grid.Column="1" Text="—"
                Style="{StaticResource WorkshopLabel}" />
       </Grid>
-      <BoxView Color="{StaticResource WorkshopSteel}" HeightRequest="1" />
+      <BoxView Color="{DynamicResource WorkshopBorder}" HeightRequest="1" />
       <Label Text="Description / notes" Style="{StaticResource WorkshopLabel}"
              FontAttributes="Bold" />
       <Label Text="—" Style="{StaticResource WorkshopSubtitle}" MinimumHeightRequest="70" />
