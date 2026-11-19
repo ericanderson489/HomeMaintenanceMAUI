@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.Win32;
-using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,7 +27,7 @@ namespace HomeMaintenanceMAUI.WinUI {
 
     private static void RegisterForWindowsStartup() {
       try {
-        string? executablePath = Process.GetCurrentProcess().MainModule?.FileName;
+        string? executablePath = Environment.ProcessPath;
 
         if (string.IsNullOrWhiteSpace(executablePath)) {
           return;
