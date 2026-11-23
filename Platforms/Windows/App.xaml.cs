@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Microsoft.UI.Xaml;
+using Microsoft.Win32;
 using Microsoft.Windows.AppNotifications;
 
 namespace HomeMaintenanceMAUI.WinUI;
@@ -33,5 +35,34 @@ public partial class App : MauiWinUIApplication
     }
 
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+
+  private static void RegisterForWindowsStartup() {
+    try {
+      string? executablePath = Process.GetCurrentProcess().MainModule?.FileName;
+
+      if (string.IsNullOrWhiteSpace(executablePath)) {
+        return;
+      }
+
+      using RegistryKey? startupKey = Registry.CurrentUser.CreateSubKey(
+          @"Software\Microsoft\Windows\CurrentVersion\Run");
+
+      startupKey?.SetValue("HomeMaintenanceMAUI", $"\"{executablePath}\"");
+    } catch (Exception) {
+      // Startup registration should not prevent the app from opening.
+    }
+  }
+
+  private static void UnregisterFromWindowsStartup() {
+    try {
+      using RegistryKey? startupKey = Registry.CurrentUser.OpenSubKey(
+          @"Software\Microsoft\Windows\CurrentVersion\Run", writable: true);
+
+      startupKey?.DeleteValue("HomeMaintenanceMAUI", throwOnMissingValue: false);
+    } catch (Exception) {
+      // Startup registration should not prevent the app from opening.
+    }
+  }
 }
+
 
