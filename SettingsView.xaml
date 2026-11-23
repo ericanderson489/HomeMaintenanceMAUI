@@ -4,9 +4,6 @@
              xmlns:local="clr-namespace:HomeMaintenanceMAUI"
              x:Class="HomeMaintenanceMAUI.SettingsView"
              BackgroundColor="{DynamicResource WorkshopCanvas}">
-  <!-- BEFORE: No Settings view existed.
-       AFTER: Appearance changes our GUI theme; Windows startup is an explicitly inactive
-       handoff control. It has no Clicked handler, command, or operating-system integration. -->
   <ScrollView>
     <VerticalStackLayout Padding="20,16" Spacing="20">
       <VerticalStackLayout Spacing="8">
@@ -40,10 +37,12 @@
           <Label Text="Open the app when you sign in to Windows."
                  Style="{StaticResource WorkshopLabel}" />
           <Button x:Name="WindowsStartupButton" Text="Allow Windows startup"
-                  Style="{StaticResource WorkshopButton}" IsEnabled="False"
+                  Style="{StaticResource WorkshopButton}"
                   HorizontalOptions="Start"
-                  SemanticProperties.Hint="Coming soon; Windows startup is not enabled" />
-          <Label Text="Coming soon. Windows startup is not enabled by this setting."
+                  Clicked="OnWindowsStartupClicked"
+                  SemanticProperties.Hint="Toggle opening the app when you sign in to Windows" />
+          <Label x:Name="WindowsStartupStatusLabel"
+                 Text="Windows startup is disabled."
                  Style="{StaticResource WorkshopSubtitle}" FontSize="16" />
         </VerticalStackLayout>
       </Border>

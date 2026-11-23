@@ -1,4 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using HomeMaintenanceMAUI.Services;
+#if WINDOWS
+using HomeMaintenanceMAUI.Platforms.Windows;
+#endif
 // This is the main entry point for the .NET MAUI application.
 namespace HomeMaintenanceMAUI
 {   // The MauiProgram class is responsible for configuring and creating the MAUI application.
@@ -14,6 +18,12 @@ namespace HomeMaintenanceMAUI
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+#if WINDOWS
+            builder.Services.AddSingleton<IStartupAppService, WindowsStartupAppService>();
+#else
+            builder.Services.AddSingleton<IStartupAppService, UnsupportedStartupAppService>();
+#endif
 
 #if DEBUG
     		builder.Logging.AddDebug();
