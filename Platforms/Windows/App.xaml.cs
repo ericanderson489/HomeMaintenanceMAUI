@@ -10,7 +10,14 @@ public partial class App : MauiWinUIApplication
     public App()
     {
         InitializeComponent();
+    bool startup = true;
+    this.InitializeComponent();
+    if (startup) {
+      RegisterForWindowsStartup();
+    } else {
+      UnregisterFromWindowsStartup();
     }
+  }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
